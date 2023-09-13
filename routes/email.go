@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"communication-service/services"
 	"encoding/json"
 	"net/http"
 )
@@ -16,6 +17,12 @@ func EmailHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&emailData)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = services.AsyncSend(emailData.Subject, emailData.Message, emailData.To)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

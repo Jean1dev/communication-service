@@ -6,10 +6,12 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
 func TestEmailHandlerSuccess(t *testing.T) {
+	os.Setenv("MAILGUN_KEY", "chave-mock")
 	email := routes.Email{
 		To:      "destinatario@example.com",
 		Subject: "Assunto do e-mail",

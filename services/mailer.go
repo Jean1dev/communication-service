@@ -25,7 +25,8 @@ func AsyncSend(subject string, body string, recipient string) error {
 
 	privateAPIKey := os.Getenv("MAILGUN_KEY")
 	if privateAPIKey == "" {
-		return errors.New("MAILGUN_KEY not configured")
+		log.Print("MAILGUN_KEY not configured")
+		return nil
 	}
 
 	go func() {

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"communication-service/infra/config"
 	"communication-service/services"
 	"encoding/json"
 	"net/http"
@@ -25,6 +26,9 @@ func EmailHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	db := config.GetDB()
+	go db.Insert(emailData, "emails_sending")
 
 	response := struct {
 		Status  string `json:"status"`

@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -40,4 +41,15 @@ func (m *MongoRepository) Insert(data interface{}, collection string) error {
 
 	log.Printf("Inserted document with _id: %v\n", result.InsertedID)
 	return nil
+}
+
+func (m *MongoRepository) FindAll(collection string, filter bson.D) (error, *mongo.Cursor) {
+	coll := m.db.Collection(collection)
+	cursor, err := coll.Find(context.TODO(), filter, options.Find())
+
+	if err != nil {
+		return err, nil
+	}
+
+	return nil, cursor
 }

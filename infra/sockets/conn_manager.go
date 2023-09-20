@@ -1,6 +1,8 @@
 package sockets
 
 import (
+	"communication-service/application"
+	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -46,6 +48,17 @@ func NewManager() *ConnectionManager {
 func (c *ConnectionManager) setupEventHandlers() {
 	c.handlers[EventSimpleMessage] = func(event EventMessage, c *ClientSocket) error {
 		log.Println(event)
+		return nil
+	}
+
+	c.handlers[EventMyNotifications] = func(event EventMessage, c *ClientSocket) error {
+		results := application.GetMyNotifications(c.Opt)
+		data, err := json.Marshal(results)
+
+		if err != nil {
+			return err
+		}
+		c.Egress <- data
 		return nil
 	}
 }

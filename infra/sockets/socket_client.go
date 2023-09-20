@@ -13,7 +13,7 @@ type ClientSocket struct {
 	Opt        string
 	connection *websocket.Conn
 	manager    *ConnectionManager
-	egress     chan []byte
+	Egress     chan []byte
 }
 
 func NewSocketClient(conn *websocket.Conn, manager *ConnectionManager, opt string) *ClientSocket {
@@ -21,7 +21,7 @@ func NewSocketClient(conn *websocket.Conn, manager *ConnectionManager, opt strin
 		Opt:        opt,
 		connection: conn,
 		manager:    manager,
-		egress:     make(chan []byte),
+		Egress:     make(chan []byte),
 	}
 }
 
@@ -63,7 +63,7 @@ func (c *ClientSocket) WriteMessages() {
 
 	for {
 		select {
-		case message, ok := <-c.egress:
+		case message, ok := <-c.Egress:
 			if !ok {
 				if err := c.connection.WriteMessage(websocket.CloseMessage, nil); err != nil {
 					log.Println("connection closed ", err)

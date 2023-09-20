@@ -15,6 +15,7 @@ import (
 func init() {
 	err := godotenv.Load()
 	if err != nil {
+		os.Setenv("MONGO_URI", "mongodb://localhost:27017")
 		log.Printf("Error loading .env file %s", err.Error())
 	}
 }

@@ -10,7 +10,8 @@ type EventMessage struct {
 type EventHandler func(event EventMessage, c *ClientSocket) error
 
 const (
-	EventSimpleMessage = "simple_message"
+	EventSimpleMessage   = "simple_message"
+	EventMyNotifications = "my_notifications"
 )
 
 type SendMessageEvent struct {

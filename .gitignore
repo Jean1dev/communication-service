@@ -21,3 +21,4 @@
 go.work
 .env
 .vscode/launch.json
+infra/__debug_bin

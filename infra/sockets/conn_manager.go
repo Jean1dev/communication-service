@@ -58,7 +58,12 @@ func (c *ConnectionManager) setupEventHandlers() {
 		if err != nil {
 			return err
 		}
-		c.Egress <- data
+
+		var outgoingEvent EventMessage
+		outgoingEvent.Payload = data
+		outgoingEvent.Type = "Response"
+
+		c.Egress <- outgoingEvent
 		return nil
 	}
 }

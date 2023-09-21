@@ -13,9 +13,11 @@ import (
 )
 
 func init() {
+	dir, _ := os.Getwd()
+	log.Printf("Diretorio atual %v", dir)
+
 	err := godotenv.Load()
 	if err != nil {
-		os.Setenv("MONGO_URI", "mongodb://localhost:27017")
 		log.Printf("Error loading .env file %s", err.Error())
 	}
 }
@@ -46,6 +48,7 @@ func setupAPI() {
 
 	sentryHandler := sentryhttp.New(sentryhttp.Options{})
 	http.HandleFunc("/email", sentryHandler.HandleFunc(routes.EmailHandler))
+	http.HandleFunc("/notificacao", sentryHandler.HandleFunc(routes.NotificationHandler))
 	socketsManager := sockets.NewManager()
 	http.HandleFunc("/ws", socketsManager.ServeWS)
 }

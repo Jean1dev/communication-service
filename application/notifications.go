@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -14,12 +15,32 @@ type Notification struct {
 	CreatedAt   string `json:"createdAt"`
 	Description string `json:"description"`
 	Read        bool   `json:"read"`
+	User        string `json:"user"`
 }
 
-func GetMyNotifications(whoNotifications string) []Notification {
+func NewNotification(description string, user string) *Notification {
+	return &Notification{
+		CreatedAt:   time.Now().String(),
+		Description: description,
+		Read:        false,
+		User:        user,
+	}
+}
+
+func InsertNewNotification(description string, user string) error {
+	db := config.GetDB()
+	notification := NewNotification(description, user)
+	if err := db.Insert(notification, "notifications"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetMyNotifications(user string) []Notification {
 	db := config.GetDB()
 
-	err, cursor := db.FindAll("notifications", bson.D{{Key: "quem", Value: whoNotifications}})
+	err, cursor := db.FindAll("notifications", bson.D{{Key: "user", Value: user}})
 	if err != nil {
 		panic(err)
 	}

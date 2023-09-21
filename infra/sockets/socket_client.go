@@ -13,7 +13,7 @@ type ClientSocket struct {
 	Opt        string
 	connection *websocket.Conn
 	manager    *ConnectionManager
-	Egress     chan []byte
+	Egress     chan EventMessage
 }
 
 func NewSocketClient(conn *websocket.Conn, manager *ConnectionManager, opt string) *ClientSocket {
@@ -21,7 +21,7 @@ func NewSocketClient(conn *websocket.Conn, manager *ConnectionManager, opt strin
 		Opt:        opt,
 		connection: conn,
 		manager:    manager,
-		Egress:     make(chan []byte),
+		Egress:     make(chan EventMessage),
 	}
 }
 

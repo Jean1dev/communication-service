@@ -1,6 +1,7 @@
 package main
 
 import (
+	"communication-service/infra/sockets"
 	"communication-service/routes"
 	"log"
 	"net/http"
@@ -12,6 +13,9 @@ import (
 )
 
 func init() {
+	dir, _ := os.Getwd()
+	log.Printf("Diretorio atual %v", dir)
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Printf("Error loading .env file %s", err.Error())
@@ -19,6 +23,21 @@ func init() {
 }
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Print("server running on ", port)
+
+	setupAPI()
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Panic(err)
+	}
+
+}
+
+func setupAPI() {
 	if err := sentry.Init(sentry.ClientOptions{
 		Dsn:              "https://533bc6327d19b7a619643db76175d214@o318666.ingest.sentry.io/4505874771804160",
 		EnableTracing:    true,
@@ -28,17 +47,8 @@ func main() {
 	}
 
 	sentryHandler := sentryhttp.New(sentryhttp.Options{})
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
-	log.Print("server running on ", port)
-
 	http.HandleFunc("/email", sentryHandler.HandleFunc(routes.EmailHandler))
-
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Panic(err)
-	}
+	http.HandleFunc("/notificacao", sentryHandler.HandleFunc(routes.NotificationHandler))
+	socketsManager := sockets.NewManager()
+	http.HandleFunc("/ws", socketsManager.ServeWS)
 }

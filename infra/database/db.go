@@ -12,6 +12,7 @@ type DefaultDatabase interface {
 	Connect()
 	Insert(data interface{}, collection string) error
 	FindAll(collection string, filter bson.D) (error, *mongo.Cursor)
+	UpdateOne(collection string, filter bson.D, update bson.D) error
 }
 
 type FakeRepo struct {
@@ -28,4 +29,8 @@ func (f *FakeRepo) Insert(data interface{}, collection string) error {
 
 func (f *FakeRepo) FindAll(collection string, filter bson.D) (error, *mongo.Cursor) {
 	return errors.New("not implemented"), nil
+}
+
+func (f *FakeRepo) UpdateOne(collection string, filter bson.D, update bson.D) error {
+	return errors.New("not implemented")
 }

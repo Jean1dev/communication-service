@@ -49,6 +49,9 @@ func setupAPI() {
 	sentryHandler := sentryhttp.New(sentryhttp.Options{})
 	http.HandleFunc("/email", sentryHandler.HandleFunc(routes.EmailHandler))
 	http.HandleFunc("/notificacao", sentryHandler.HandleFunc(routes.NotificationHandler))
+	http.HandleFunc("/social-feed", sentryHandler.HandleFunc(routes.SocialFeedHandler))
+	http.HandleFunc("/social-feed/like", sentryHandler.HandleFunc(routes.SocialFeedHandler))
+	http.HandleFunc("/social-feed/comment", sentryHandler.HandleFunc(routes.SocialFeedHandler))
 	socketsManager := sockets.NewManager()
 	http.HandleFunc("/ws", socketsManager.ServeWS)
 }

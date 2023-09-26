@@ -53,3 +53,16 @@ func (m *MongoRepository) FindAll(collection string, filter bson.D) (error, *mon
 
 	return nil, cursor
 }
+
+func (m *MongoRepository) UpdateOne(collection string, filter bson.D, update bson.D) error {
+	coll := m.db.Collection(collection)
+	result, err := coll.UpdateOne(context.TODO(), filter, update)
+
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	log.Printf("ModifiedCount _id: %v\n", result.ModifiedCount)
+	return nil
+}

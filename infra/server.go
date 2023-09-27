@@ -31,10 +31,17 @@ func main() {
 	log.Print("server running on ", port)
 
 	setupAPI()
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	if err := http.ListenAndServe(":"+port, allowCors(http.DefaultServeMux)); err != nil {
 		log.Panic(err)
 	}
 
+}
+
+func allowCors(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		handler.ServeHTTP(w, r)
+	})
 }
 
 func setupAPI() {

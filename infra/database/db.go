@@ -6,12 +6,13 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type DefaultDatabase interface {
 	Connect()
 	Insert(data interface{}, collection string) error
-	FindAll(collection string, filter bson.D) (error, *mongo.Cursor)
+	FindAll(collection string, filter bson.D, options *options.FindOptions) (error, *mongo.Cursor)
 	UpdateOne(collection string, filter bson.D, update bson.D) error
 }
 
@@ -27,7 +28,7 @@ func (f *FakeRepo) Insert(data interface{}, collection string) error {
 	return nil
 }
 
-func (f *FakeRepo) FindAll(collection string, filter bson.D) (error, *mongo.Cursor) {
+func (f *FakeRepo) FindAll(collection string, filter bson.D, options *options.FindOptions) (error, *mongo.Cursor) {
 	return errors.New("not implemented"), nil
 }
 

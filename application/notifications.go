@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Notification struct {
@@ -40,7 +41,7 @@ func InsertNewNotification(description string, user string) error {
 func GetMyNotifications(user string) []Notification {
 	db := config.GetDB()
 
-	err, cursor := db.FindAll("notifications", bson.D{{Key: "user", Value: user}})
+	err, cursor := db.FindAll("notifications", bson.D{{Key: "user", Value: user}}, options.Find())
 	if err != nil {
 		panic(err)
 	}

@@ -43,9 +43,9 @@ func (m *MongoRepository) Insert(data interface{}, collection string) error {
 	return nil
 }
 
-func (m *MongoRepository) FindAll(collection string, filter bson.D) (error, *mongo.Cursor) {
+func (m *MongoRepository) FindAll(collection string, filter bson.D, options *options.FindOptions) (error, *mongo.Cursor) {
 	coll := m.db.Collection(collection)
-	cursor, err := coll.Find(context.TODO(), filter, options.Find())
+	cursor, err := coll.Find(context.TODO(), filter, options)
 
 	if err != nil {
 		return err, nil

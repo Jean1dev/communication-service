@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"math/rand"
 	"strconv"
@@ -12,9 +13,13 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var postCollection = "feed-posts"
+var (
+	postCollection = "feed-posts"
+	dateFormat     = "02/01/2006 15:04"
+)
 
 type PostEntity struct {
 	Id        string          `json:"id"`
@@ -49,7 +54,7 @@ func NewComment(user string, avatar string, comment string) CommentEntity {
 	commentEntity := &CommentEntity{
 		Id:        strconv.Itoa(rand.Int()),
 		Author:    *author,
-		CreatedAt: time.Now().Format("02/01/2006 15:04"),
+		CreatedAt: time.Now().Format(dateFormat),
 		Message:   comment,
 	}
 
@@ -72,7 +77,7 @@ func NewPostEntityFromInputBody(
 		Likes:     0,
 		Message:   message,
 		Media:     media,
-		CreatedAt: time.Now().Format("02/01/2006 15:04"),
+		CreatedAt: time.Now().Format(dateFormat),
 		Comments:  make([]CommentEntity, 0),
 	}
 	return *post
@@ -164,7 +169,8 @@ func MyFeed(username string) (error, []PostEntity) {
 
 	log.Printf("buscando posts de %s", username)
 
-	err, cursor := db.FindAll(postCollection, bson.D{})
+	opts := options.Find().SetSort(bson.D{{Key: "_id", Value: -1}})
+	err, cursor := db.FindAll(postCollection, bson.D{}, opts)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -192,8 +198,39 @@ func MyFeed(username string) (error, []PostEntity) {
 		}
 
 		post.Id = doc["_id"].(primitive.ObjectID).Hex()
+		post.CreatedAt = calculateDuration(post.CreatedAt)
 		results = append(results, post)
 	}
 
 	return nil, results
+}
+
+func calculateDuration(dateString string) string {
+	t, err := time.Parse(dateFormat, dateString)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	now := time.Now()
+	duration := now.Sub(t)
+
+	years := int(duration.Hours() / 24 / 365)
+	months := int(duration.Hours()/24/30) % 12
+	days := int(duration.Hours()/24) % 30
+	hours := int(duration.Hours()) % 24
+	minutes := int(duration.Minutes()) % 60
+
+	if years > 0 {
+		return fmt.Sprintf("%d ano(s) atrás", years)
+	} else if months > 0 {
+		return fmt.Sprintf("%d mês(es) atrás", months)
+	} else if days > 0 {
+		return fmt.Sprintf("%d dia(s) atrás", days)
+	} else if hours > 0 {
+		return fmt.Sprintf("%d hora(s) e %d minuto(s) atrás", hours, minutes)
+	} else if minutes > 0 {
+		return fmt.Sprintf("%d minuto(s) atrás", minutes)
+	}
+
+	return "Agora"
 }

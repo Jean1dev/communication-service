@@ -2,6 +2,7 @@ package routes
 
 import (
 	"communication-service/application"
+	"communication-service/infra/config"
 	"encoding/json"
 	"net/http"
 	"strings"
@@ -28,6 +29,7 @@ type CommentPayload struct {
 }
 
 func SocialFeedHandler(w http.ResponseWriter, r *http.Request) {
+	config.AllowAllOrigins(w, r)
 	method := r.Method
 	if method == "POST" {
 		if strings.HasPrefix(r.URL.Path, "/social-feed/like") {

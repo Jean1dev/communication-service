@@ -2,6 +2,7 @@ package routes
 
 import (
 	"communication-service/application"
+	"communication-service/infra/config"
 	"encoding/json"
 	"net/http"
 )
@@ -12,6 +13,7 @@ type NotificationPost struct {
 }
 
 func NotificationHandler(w http.ResponseWriter, r *http.Request) {
+	config.AllowAllOrigins(w, r)
 	method := r.Method
 	if method == "POST" {
 		doPost(w, r)

@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"communication-service/infra/config"
+	"communication-service/infra/database"
 	"communication-service/services"
 	"encoding/json"
 	"net/http"
@@ -27,7 +27,7 @@ func EmailHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db := config.GetDB()
+	db := database.GetDB()
 	go db.Insert(emailData, "emails_sending")
 
 	response := struct {

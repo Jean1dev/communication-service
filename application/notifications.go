@@ -1,7 +1,7 @@
 package application
 
 import (
-	"communication-service/infra/config"
+	"communication-service/infra/database"
 	"context"
 	"encoding/json"
 	"log"
@@ -29,7 +29,7 @@ func NewNotification(description string, user string) *Notification {
 }
 
 func InsertNewNotification(description string, user string) error {
-	db := config.GetDB()
+	db := database.GetDB()
 	notification := NewNotification(description, user)
 	if err := db.Insert(notification, "notifications"); err != nil {
 		return err
@@ -39,7 +39,7 @@ func InsertNewNotification(description string, user string) error {
 }
 
 func GetMyNotifications(user string) []Notification {
-	db := config.GetDB()
+	db := database.GetDB()
 
 	err, cursor := db.FindAll("notifications", bson.D{{Key: "user", Value: user}}, options.Find())
 	if err != nil {

@@ -1,7 +1,7 @@
 package application
 
 import (
-	"communication-service/infra/config"
+	"communication-service/infra/database"
 	"context"
 	"encoding/json"
 	"errors"
@@ -113,7 +113,7 @@ func InsertNewPost(authorName string,
 		return err
 	}
 
-	db := config.GetDB()
+	db := database.GetDB()
 	err := db.Insert(post, postCollection)
 
 	if err != nil {
@@ -124,7 +124,7 @@ func InsertNewPost(authorName string,
 }
 
 func AddComment(comment string, postId string, user string, avatar string) error {
-	db := config.GetDB()
+	db := database.GetDB()
 	id, err := primitive.ObjectIDFromHex(postId)
 	if err != nil {
 		return err
@@ -144,7 +144,7 @@ func AddComment(comment string, postId string, user string, avatar string) error
 }
 
 func AddLike(postId string) error {
-	db := config.GetDB()
+	db := database.GetDB()
 	id, err := primitive.ObjectIDFromHex(postId)
 	if err != nil {
 		return err
@@ -165,7 +165,7 @@ func AddLike(postId string) error {
 }
 
 func MyFeed(username string) (error, []PostEntity) {
-	db := config.GetDB()
+	db := database.GetDB()
 
 	log.Printf("buscando posts de %s", username)
 

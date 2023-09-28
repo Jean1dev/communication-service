@@ -3,10 +3,16 @@ package database
 import (
 	"errors"
 	"log"
+	"os"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+var (
+	db               DefaultDatabase
+	alreadyConnected = false
 )
 
 type DefaultDatabase interface {
@@ -34,4 +40,24 @@ func (f *FakeRepo) FindAll(collection string, filter bson.D, options *options.Fi
 
 func (f *FakeRepo) UpdateOne(collection string, filter bson.D, update bson.D) error {
 	return errors.New("not implemented")
+}
+
+func connect() {
+	mongouri := os.Getenv("MONGO_URI")
+
+	if mongouri == "" {
+		db = &FakeRepo{}
+	} else {
+		db = &MongoRepository{}
+	}
+	db.Connect()
+}
+
+func GetDB() DefaultDatabase {
+	if alreadyConnected == false {
+		connect()
+	}
+
+	alreadyConnected = true
+	return db
 }

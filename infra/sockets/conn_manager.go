@@ -11,6 +11,7 @@ import (
 
 var (
 	ErrEventNotSupported = errors.New("this event type is not supported")
+	Cm                   ConnectionManager
 )
 
 var (
@@ -31,6 +32,11 @@ func CheckOrigin(r *http.Request) bool {
 	origin := r.Header.Get("Origin")
 	log.Printf("Origin is %s", origin)
 	return true
+}
+
+func InitManagerGlobally() *ConnectionManager {
+	Cm := NewManager()
+	return Cm
 }
 
 func NewManager() *ConnectionManager {

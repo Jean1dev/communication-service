@@ -52,6 +52,6 @@ func setupAPI() {
 	http.HandleFunc("/social-feed", sentryHandler.HandleFunc(routes.SocialFeedHandler))
 	http.HandleFunc("/social-feed/like", sentryHandler.HandleFunc(routes.SocialFeedHandler))
 	http.HandleFunc("/social-feed/comment", sentryHandler.HandleFunc(routes.SocialFeedHandler))
-	socketsManager := sockets.NewManager()
+	socketsManager := sockets.InitManagerGlobally()
 	http.HandleFunc("/ws", socketsManager.ServeWS)
 }

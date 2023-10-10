@@ -66,3 +66,9 @@ func (m *MongoRepository) UpdateOne(collection string, filter bson.D, update bso
 	log.Printf("ModifiedCount _id: %v\n", result.ModifiedCount)
 	return nil
 }
+
+func (m *MongoRepository) FindOne(collection string, filter bson.D) (error, *mongo.SingleResult) {
+	coll := m.db.Collection(collection)
+	doc := coll.FindOne(context.TODO(), filter)
+	return nil, doc
+}

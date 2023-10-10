@@ -19,6 +19,7 @@ type DefaultDatabase interface {
 	Connect()
 	Insert(data interface{}, collection string) error
 	FindAll(collection string, filter bson.D, options *options.FindOptions) (error, *mongo.Cursor)
+	FindOne(collection string, filter bson.D) (error, *mongo.SingleResult)
 	UpdateOne(collection string, filter bson.D, update bson.D) error
 }
 
@@ -40,6 +41,10 @@ func (f *FakeRepo) FindAll(collection string, filter bson.D, options *options.Fi
 
 func (f *FakeRepo) UpdateOne(collection string, filter bson.D, update bson.D) error {
 	return errors.New("not implemented")
+}
+
+func (f *FakeRepo) FindOne(collection string, filter bson.D) (error, *mongo.SingleResult) {
+	return errors.New("not implemented"), nil
 }
 
 func connect() {

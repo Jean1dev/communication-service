@@ -13,6 +13,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -97,6 +98,28 @@ func (p *PostEntity) Validate() error {
 	}
 
 	return nil
+}
+
+func FindById(id string) (*PostEntity, error) {
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{Key: "_id", Value: objectId}}
+	db := database.GetDB()
+	_, data := db.FindOne(postCollection, filter)
+
+	var result PostEntity
+	if err := data.Decode(&result); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.New("Entity not found")
+		}
+
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 func InsertNewPost(authorName string,

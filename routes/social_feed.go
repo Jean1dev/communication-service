@@ -46,9 +46,32 @@ func SocialFeedHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if method == "GET" {
-		handleGet(w, r)
+		id := strings.TrimPrefix(r.URL.Path, "/social-feed/")
+		if id == "" {
+			handleGet(w, r)
+			return
+		}
+
+		handleGetOne(w, r, id)
+
+	}
+}
+
+func handleGetOne(w http.ResponseWriter, r *http.Request, id string) {
+	post, err := application.FindById(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	jsonResult, err := json.Marshal(post)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonResult)
 }
 
 func handleComment(w http.ResponseWriter, r *http.Request) {

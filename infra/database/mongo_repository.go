@@ -72,3 +72,16 @@ func (m *MongoRepository) FindOne(collection string, filter bson.D) (error, *mon
 	doc := coll.FindOne(context.TODO(), filter)
 	return nil, doc
 }
+
+func (m *MongoRepository) CountDocuments(collection string, filter bson.D) (int, error) {
+	coll := m.db.Collection(collection)
+	count, err := coll.CountDocuments(context.TODO(), filter)
+
+	if err != nil {
+		log.Print(err)
+		return 0, err
+	}
+
+	log.Printf("CountDocuments in %s -> %d ", collection, count)
+	return int(count), nil
+}

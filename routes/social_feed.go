@@ -47,7 +47,7 @@ func SocialFeedHandler(w http.ResponseWriter, r *http.Request) {
 
 	if method == "GET" {
 		id := strings.TrimPrefix(r.URL.Path, "/social-feed/")
-		if id == "" {
+		if id == "/social-feed" {
 			handleGet(w, r)
 			return
 		}

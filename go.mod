@@ -3,6 +3,8 @@ module communication-service
 go 1.18
 
 require (
+	github.com/acobaugh/osrelease v0.0.0-20181218015638-a93a0a55a249 // indirect
+	github.com/benweissmann/memongo v0.1.1 // indirect
 	github.com/getsentry/sentry-go v0.24.1 // indirect
 	github.com/go-chi/chi/v5 v5.0.8 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
@@ -15,6 +17,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/spf13/afero v1.2.1 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect

@@ -16,7 +16,7 @@ func MyNotificationsEventHandler() EventHandler {
 
 		var outgoingEvent EventMessage
 		outgoingEvent.Payload = data
-		outgoingEvent.Type = "Response"
+		outgoingEvent.Type = "MyNotificationsResponse"
 
 		c.Egress <- outgoingEvent
 		return nil

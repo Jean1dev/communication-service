@@ -8,8 +8,9 @@ import (
 )
 
 type NotificationPost struct {
-	Desc string `json:"desc"`
-	User string `json:"user"`
+	Desc      string   `json:"desc"`
+	User      string   `json:"user"`
+	Caixinhas []string `json:"caixinhas"`
 }
 
 func NotificationHandler(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +31,13 @@ func doPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := application.InsertNewNotification(payload.Desc, payload.User)
+	var err error
+	if len(payload.Caixinhas) > 1 {
+		application.NewNofiticationForCaixinha(payload.Desc, payload.User, payload.Caixinhas)
+	} else {
+		err = application.InsertNewNotification(payload.Desc, payload.User)
+	}
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

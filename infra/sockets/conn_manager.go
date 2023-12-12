@@ -1,5 +1,6 @@
 package sockets
 
+// https://programmingpercy.tech/blog/mastering-websockets-with-go/#scaling-using-an-event-approach
 import (
 	"errors"
 	"log"
@@ -50,8 +51,8 @@ func NewManager() *ConnectionManager {
 }
 
 func (c *ConnectionManager) setupEventHandlers() {
-	c.handlers[EventSimpleMessage] = SimpleMessageEventHandler()
 	c.handlers[EventMyNotifications] = MyNotificationsEventHandler()
+	c.handlers[EventSentNoficationsCaixinha] = SentNoficationsCaixinha()
 }
 
 func (c *ConnectionManager) routeEvent(event EventMessage, client *ClientSocket) error {

@@ -19,6 +19,7 @@ type DefaultDatabase interface {
 	FindAll(collection string, filter bson.D, options *options.FindOptions) (error, *mongo.Cursor)
 	FindOne(collection string, filter bson.D) (error, *mongo.SingleResult)
 	UpdateOne(collection string, filter bson.D, update bson.D) error
+	UpdateMany(collection string, filter bson.D, update bson.D) error
 	CountDocuments(collection string, filter bson.D) (int, error)
 }
 

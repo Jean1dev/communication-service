@@ -46,3 +46,7 @@ func (f *FakeRepo) FindOne(collection string, filter bson.D) (error, *mongo.Sing
 func (f *FakeRepo) CountDocuments(collection string, filter bson.D) (int, error) {
 	return f.dbMemo.CountDocuments(collection, filter)
 }
+
+func (f *FakeRepo) UpdateMany(collection string, filter bson.D, update bson.D) error {
+	return f.dbMemo.UpdateMany(collection, filter, update)
+}

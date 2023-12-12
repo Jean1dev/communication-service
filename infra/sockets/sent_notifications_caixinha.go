@@ -29,7 +29,7 @@ func broadcastoToAllUsers(userDestination string, input NotificationInput, c *Cl
 			}
 
 			outgoingEvent.Payload = data
-			outgoingEvent.Type = "Response"
+			outgoingEvent.Type = "Notification"
 			wsclient.Egress <- outgoingEvent
 		}
 	}

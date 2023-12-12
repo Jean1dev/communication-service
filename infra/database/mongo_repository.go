@@ -85,3 +85,16 @@ func (m *MongoRepository) CountDocuments(collection string, filter bson.D) (int,
 	log.Printf("CountDocuments in %s -> %d ", collection, count)
 	return int(count), nil
 }
+
+func (m *MongoRepository) UpdateMany(collection string, filter bson.D, update bson.D) error {
+	coll := m.db.Collection(collection)
+	result, err := coll.UpdateMany(context.TODO(), filter, update)
+
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	log.Printf("ModifiedCount : %v\n", result.ModifiedCount)
+	return nil
+}

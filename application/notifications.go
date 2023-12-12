@@ -41,6 +41,34 @@ func verifyIfElementIsOnTheList(list []string, element string) bool {
 	return false
 }
 
+func MarkNotificationAsRead(ids []string, user string) error {
+	db := database.GetDB()
+
+	for id := range ids {
+		filter := bson.D{{Key: "_id", Value: id}}
+		update := bson.D{
+			{Key: "$set", Value: bson.D{{Key: "read", Value: true}}},
+		}
+
+		if err := db.UpdateOne("notifications", filter, update); err != nil {
+			return err
+		}
+	}
+
+	if len(ids) == 0 {
+		filter := bson.D{{Key: "user", Value: user}}
+		update := bson.D{
+			{Key: "$set", Value: bson.D{{Key: "read", Value: true}}},
+		}
+
+		if err := db.UpdateMany("notifications", filter, update); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func NewNofiticationForCaixinha(description string, user string, caixinhasId []string) []string {
 	notificacoesList := []string{user}
 	for _, it := range caixinhasId {
@@ -148,6 +176,10 @@ func GetMyNotifications(user string) []Notification {
 		err = json.Unmarshal(jsonData, &notification)
 		if err != nil {
 			log.Fatal(err)
+		}
+
+		if notification.Read {
+			continue
 		}
 
 		results = append(results, notification)

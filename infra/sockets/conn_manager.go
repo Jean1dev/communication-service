@@ -36,8 +36,7 @@ func CheckOrigin(r *http.Request) bool {
 }
 
 func InitManagerGlobally() *ConnectionManager {
-	Cm := NewManager()
-	return Cm
+	return NewManager()
 }
 
 func NewManager() *ConnectionManager {

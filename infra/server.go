@@ -49,7 +49,10 @@ func setupAPI() {
 	sentryHandler := sentryhttp.New(sentryhttp.Options{})
 	http.HandleFunc("/email", sentryHandler.HandleFunc(routes.EmailHandler))
 	http.HandleFunc("/email-stats", sentryHandler.HandleFunc(routes.EmailEstatisticasHandler))
+
 	http.HandleFunc("/notificacao", sentryHandler.HandleFunc(routes.NotificationHandler))
+	http.HandleFunc("/notificacao/mark-as-read", sentryHandler.HandleFunc(routes.NotificationHandler))
+
 	http.HandleFunc("/social-feed", sentryHandler.HandleFunc(routes.SocialFeedHandler))
 	http.HandleFunc("/social-feed/", sentryHandler.HandleFunc(routes.SocialFeedHandler))
 	http.HandleFunc("/social-feed/like", sentryHandler.HandleFunc(routes.SocialFeedHandler))

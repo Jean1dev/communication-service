@@ -38,3 +38,21 @@ func TestPostNotification(t *testing.T) {
 		t.Errorf("Esperava-se status code %d, mas recebeu %d", http.StatusOK, res.StatusCode)
 	}
 }
+
+func TestMarkNotificationAsRead(t *testing.T) {
+	n := routes.MarkNotificationAsRead{
+		User: "jean@jean",
+		All:  true,
+	}
+
+	data, _ := json.Marshal(n)
+	req := httptest.NewRequest("POST", "/notificacao/mark-as-read", bytes.NewBuffer(data))
+	rec := httptest.NewRecorder()
+
+	routes.NotificationHandler(rec, req)
+
+	res := rec.Result()
+	if res.StatusCode != http.StatusOK {
+		t.Errorf("Esperava-se status code %d, mas recebeu %d", http.StatusOK, res.StatusCode)
+	}
+}

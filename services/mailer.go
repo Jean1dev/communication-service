@@ -34,6 +34,8 @@ func AsyncSend(subject string, body string, recipient string) error {
 		sender := "Binno apps <equipe@central.binnoapp.com>"
 
 		message := mg.NewMessage(sender, subject, body, recipient)
+		message.SetHtml(Default(subject, body))
+
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 		defer cancel()
 

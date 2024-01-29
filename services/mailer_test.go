@@ -2,6 +2,7 @@ package services_test
 
 import (
 	"communication-service/services"
+	"os"
 	"testing"
 )
 
@@ -10,7 +11,7 @@ func TestSendMail(t *testing.T) {
 	body := "Hello from Mailgun Go!"
 	recipient := "jeanlucafp@gmail.com"
 
-	//os.Setenv("MAILGUN_KEY", "chave-mock")
+	os.Setenv("MAILGUN_KEY", "chave-mock")
 
 	services.AsyncSend(subject, body, recipient)
 }

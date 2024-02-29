@@ -27,7 +27,6 @@ func (f *FakeRepo) Connect() {
 }
 
 func (f *FakeRepo) Insert(data interface{}, collection string) error {
-	log.Printf("fake repo insert %s", data)
 	return f.dbMemo.Insert(data, collection)
 }
 

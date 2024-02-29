@@ -5,12 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -20,6 +21,7 @@ type Notification struct {
 	Description string `json:"description"`
 	Read        bool   `json:"read"`
 	User        string `json:"user"`
+	Type        string `json:"type"`
 }
 
 func NewNotification(description string, user string) *Notification {
@@ -28,6 +30,7 @@ func NewNotification(description string, user string) *Notification {
 		Description: description,
 		Read:        false,
 		User:        user,
+		Type:        "user_info",
 	}
 }
 
@@ -90,7 +93,7 @@ func NewNofiticationForCaixinha(description string, user string, caixinhasId []s
 
 		defer resp.Body.Close()
 
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Print("Erro ao ler o corpo da resposta:", err)
 			continue
@@ -133,12 +136,23 @@ func NewNofiticationForCaixinha(description string, user string, caixinhasId []s
 	}
 
 	for _, it := range notificacoesList {
-		if err := InsertNewNotification(description, it); err != nil {
+		if err := newAlertNotification(description, it); err != nil {
 			log.Fatalf(err.Error())
 		}
 	}
 
 	return notificacoesList
+}
+
+func newAlertNotification(description string, user string) error {
+	db := database.GetDB()
+	notification := NewNotification(description, user)
+	notification.Type = "new_feature"
+	if err := db.Insert(notification, "notifications"); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func InsertNewNotification(description string, user string) error {
@@ -182,6 +196,7 @@ func GetMyNotifications(user string) []Notification {
 			continue
 		}
 
+		notification.Id = doc["_id"].(primitive.ObjectID).Hex()
 		results = append(results, notification)
 	}
 	return results

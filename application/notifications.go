@@ -1,6 +1,7 @@
 package application
 
 import (
+	"communication-service/constants"
 	"communication-service/infra/database"
 	"context"
 	"encoding/json"
@@ -75,13 +76,18 @@ func MarkNotificationAsRead(ids []string, user string) error {
 func NewNofiticationForCaixinha(description string, user string, caixinhasId []string) []string {
 	notificacoesList := []string{user}
 	for _, it := range caixinhasId {
-		url := fmt.Sprintf("https://emprestimo-caixinha.azurewebsites.net/api/dados-analise?caixinhaId=%s", it)
+		url := fmt.Sprintf("%s/dados-analise?caixinhaId=%s", constants.CaixinhaServer, it)
 
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			log.Printf("Erro ao criar a requisição para a Caixinha %s: %s\n", it, err)
 			continue
 		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 7*time.Second)
+		defer cancel()
+
+		req = req.WithContext(ctx)
 
 		client := &http.Client{}
 		resp, err := client.Do(req)

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var email_collection = "emails_sending"
@@ -22,7 +23,8 @@ type Email struct {
 func EmailEstatisticasHandler(w http.ResponseWriter, r *http.Request) {
 	db := database.GetDB()
 	umaSemanaAtras := time.Now().AddDate(0, 0, -7)
-	filter := bson.D{{Key: "createdat", Value: bson.D{{Key: "$lt", Value: umaSemanaAtras}}}}
+	umaSemanaAtrasMongo := primitive.NewDateTimeFromTime(umaSemanaAtras)
+	filter := bson.D{{Key: "createdAt", Value: bson.D{{Key: "$gt", Value: umaSemanaAtrasMongo}}}}
 
 	qtd, err := db.CountDocuments(email_collection, filter)
 	if err != nil {
@@ -54,10 +56,10 @@ func EmailHandler(w http.ResponseWriter, r *http.Request) {
 	db := database.GetDB()
 
 	emailEntity := struct {
-		To        string    `json:"to"`
-		CreatedAt time.Time `json:"createdAt"`
+		To        string             `json:"to"`
+		CreatedAt primitive.DateTime `bson:"createdAt" json:"createdAt"`
 	}{
-		CreatedAt: time.Now(),
+		CreatedAt: primitive.NewDateTimeFromTime(time.Now()),
 		To:        emailData.To,
 	}
 

@@ -1,10 +1,11 @@
 package sockets
 
 import (
-	"communication-service/application"
 	"encoding/json"
 	"fmt"
 	"log"
+
+	"github.com/Jean1dev/communication-service/internal/application"
 )
 
 type NotificationInput struct {

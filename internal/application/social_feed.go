@@ -1,7 +1,6 @@
 package application
 
 import (
-	"communication-service/infra/database"
 	"context"
 	"encoding/json"
 	"errors"
@@ -11,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Jean1dev/communication-service/internal/infra/database"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

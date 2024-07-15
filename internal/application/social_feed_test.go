@@ -1,8 +1,9 @@
 package application_test
 
 import (
-	"communication-service/application"
 	"testing"
+
+	"github.com/Jean1dev/communication-service/internal/application"
 )
 
 func TestDeveCriarPostComSucesso(t *testing.T) {

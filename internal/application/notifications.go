@@ -1,8 +1,6 @@
 package application
 
 import (
-	"communication-service/constants"
-	"communication-service/infra/database"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -11,6 +9,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Jean1dev/communication-service/configs"
+	"github.com/Jean1dev/communication-service/internal/infra/database"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -76,7 +76,7 @@ func MarkNotificationAsRead(ids []string, user string) error {
 func NewNofiticationForCaixinha(description string, user string, caixinhasId []string) []string {
 	notificacoesList := []string{user}
 	for _, it := range caixinhasId {
-		url := fmt.Sprintf("%s/dados-analise?caixinhaId=%s", constants.CaixinhaServer, it)
+		url := fmt.Sprintf("%s/dados-analise?caixinhaId=%s", configs.CaixinhaServer, it)
 
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {

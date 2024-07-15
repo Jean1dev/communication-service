@@ -1,16 +1,17 @@
-package routes_test
+package api_test
 
 import (
 	"bytes"
-	"communication-service/routes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/Jean1dev/communication-service/api"
 )
 
 func TestNaoDeveCriarUmNovoPos(t *testing.T) {
-	body := routes.SocialPost{
+	body := api.SocialPost{
 		Message: "my first post",
 	}
 
@@ -18,7 +19,7 @@ func TestNaoDeveCriarUmNovoPos(t *testing.T) {
 	req := httptest.NewRequest("POST", "/social-feed", bytes.NewBuffer(data))
 	rec := httptest.NewRecorder()
 
-	routes.SocialFeedHandler(rec, req)
+	api.SocialFeedHandler(rec, req)
 
 	res := rec.Result()
 	if res.StatusCode != http.StatusBadRequest {

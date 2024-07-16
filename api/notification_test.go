@@ -1,19 +1,20 @@
-package routes_test
+package api_test
 
 import (
 	"bytes"
-	"communication-service/routes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/Jean1dev/communication-service/api"
 )
 
 func TestRouteNotFound(t *testing.T) {
 	req := httptest.NewRequest("PUT", "/notificacao", nil)
 	rec := httptest.NewRecorder()
 
-	routes.NotificationHandler(rec, req)
+	api.NotificationHandler(rec, req)
 
 	res := rec.Result()
 	if res.StatusCode != http.StatusBadRequest {
@@ -22,7 +23,7 @@ func TestRouteNotFound(t *testing.T) {
 }
 
 func TestPostNotification(t *testing.T) {
-	n := routes.NotificationPost{
+	n := api.NotificationPost{
 		Desc: "teste",
 		User: "teste",
 	}
@@ -31,7 +32,7 @@ func TestPostNotification(t *testing.T) {
 	req := httptest.NewRequest("POST", "/notificacao", bytes.NewBuffer(data))
 	rec := httptest.NewRecorder()
 
-	routes.NotificationHandler(rec, req)
+	api.NotificationHandler(rec, req)
 
 	res := rec.Result()
 	if res.StatusCode != http.StatusOK {
@@ -40,7 +41,7 @@ func TestPostNotification(t *testing.T) {
 }
 
 func TestMarkNotificationAsRead(t *testing.T) {
-	n := routes.MarkNotificationAsRead{
+	n := api.MarkNotificationAsRead{
 		User: "jean@jean",
 		All:  true,
 	}
@@ -49,7 +50,7 @@ func TestMarkNotificationAsRead(t *testing.T) {
 	req := httptest.NewRequest("POST", "/notificacao/mark-as-read", bytes.NewBuffer(data))
 	rec := httptest.NewRecorder()
 
-	routes.NotificationHandler(rec, req)
+	api.NotificationHandler(rec, req)
 
 	res := rec.Result()
 	if res.StatusCode != http.StatusOK {

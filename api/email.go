@@ -1,13 +1,13 @@
-package routes
+package api
 
 import (
-	"communication-service/infra/database"
-	"communication-service/services"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/Jean1dev/communication-service/internal/infra/database"
+	"github.com/Jean1dev/communication-service/internal/services"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

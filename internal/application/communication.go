@@ -1,8 +1,6 @@
 package application
 
 import (
-	"communication-service/constants"
-	"communication-service/services"
 	"context"
 	"encoding/json"
 	"errors"
@@ -11,10 +9,13 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/Jean1dev/communication-service/configs"
+	"github.com/Jean1dev/communication-service/internal/services"
 )
 
 func searchForPhone(recipient string) (string, error) {
-	url := fmt.Sprintf("%s/get-user-data?email=%s", constants.CaixinhaServer, recipient)
+	url := fmt.Sprintf("%s/get-user-data?email=%s", configs.CaixinhaServer, recipient)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

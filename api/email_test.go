@@ -1,17 +1,18 @@
-package routes_test
+package api_test
 
 import (
 	"bytes"
-	"communication-service/routes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/Jean1dev/communication-service/api"
 )
 
 func TestEmailHandlerSuccess(t *testing.T) {
 	//os.Setenv("MAILGUN_KEY", "chave-mock")
-	email := routes.Email{
+	email := api.Email{
 		To:      "destinatario@example.com",
 		Subject: "Assunto do e-mail",
 		Message: "Conteúdo do e-mail",
@@ -21,7 +22,7 @@ func TestEmailHandlerSuccess(t *testing.T) {
 	req := httptest.NewRequest("POST", "/email", bytes.NewBuffer(emailJSON))
 	rec := httptest.NewRecorder()
 
-	routes.EmailHandler(rec, req)
+	api.EmailHandler(rec, req)
 
 	res := rec.Result()
 	defer res.Body.Close()
@@ -36,7 +37,7 @@ func TestEmailHandlerFailed(t *testing.T) {
 	invalidReq := httptest.NewRequest("POST", "/email", bytes.NewBuffer(invalidEmailJSON))
 	invalidRec := httptest.NewRecorder()
 
-	routes.EmailHandler(invalidRec, invalidReq)
+	api.EmailHandler(invalidRec, invalidReq)
 
 	invalidRes := invalidRec.Result()
 	defer invalidRes.Body.Close()

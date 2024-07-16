@@ -1,9 +1,10 @@
 package services_test
 
 import (
-	"communication-service/services"
 	"os"
 	"testing"
+
+	"github.com/Jean1dev/communication-service/internal/services"
 )
 
 func TestSendMail(t *testing.T) {

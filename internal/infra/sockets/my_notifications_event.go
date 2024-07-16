@@ -1,8 +1,9 @@
 package sockets
 
 import (
-	"communication-service/application"
 	"encoding/json"
+
+	"github.com/Jean1dev/communication-service/internal/application"
 )
 
 func MyNotificationsEventHandler() EventHandler {

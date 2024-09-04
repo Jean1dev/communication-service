@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Jean1dev/communication-service/internal/dto"
 	"github.com/Jean1dev/communication-service/internal/infra/database"
 	"github.com/Jean1dev/communication-service/internal/services"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,12 +14,6 @@ import (
 )
 
 var email_collection = "emails_sending"
-
-type Email struct {
-	To      string `json:"to"`
-	Subject string `json:"subject"`
-	Message string `json:"message"`
-}
 
 func EmailEstatisticasHandler(w http.ResponseWriter, r *http.Request) {
 	db := database.GetDB()
@@ -32,7 +27,12 @@ func EmailEstatisticasHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = services.AsyncSend("Quantidade de emails enviado na semanda", fmt.Sprintf("a quantidade foi %d", qtd), "jeanlucafp@gmail.com")
+	mailInput := dto.MailSenderInputDto{
+		Subject:   "Quantidade de emails enviado na semanda",
+		Body:      fmt.Sprintf("a quantidade foi %d", qtd),
+		Recipient: "jeanlucafp@gmail.com",
+	}
+	err = services.AsyncSend(mailInput)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -40,14 +40,14 @@ func EmailEstatisticasHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func EmailHandler(w http.ResponseWriter, r *http.Request) {
-	var emailData Email
+	var emailData dto.MailSenderInputDto
 	err := json.NewDecoder(r.Body).Decode(&emailData)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = services.AsyncSend(emailData.Subject, emailData.Message, emailData.To)
+	err = services.AsyncSend(emailData)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -60,7 +60,7 @@ func EmailHandler(w http.ResponseWriter, r *http.Request) {
 		CreatedAt primitive.DateTime `bson:"createdAt" json:"createdAt"`
 	}{
 		CreatedAt: primitive.NewDateTimeFromTime(time.Now()),
-		To:        emailData.To,
+		To:        emailData.Recipient,
 	}
 
 	go db.Insert(emailEntity, email_collection)

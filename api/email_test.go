@@ -8,14 +8,15 @@ import (
 	"testing"
 
 	"github.com/Jean1dev/communication-service/api"
+	"github.com/Jean1dev/communication-service/internal/dto"
 )
 
 func TestEmailHandlerSuccess(t *testing.T) {
 	//os.Setenv("MAILGUN_KEY", "chave-mock")
-	email := api.Email{
-		To:      "destinatario@example.com",
-		Subject: "Assunto do e-mail",
-		Message: "Conteúdo do e-mail",
+	email := dto.MailSenderInputDto{
+		Recipient: "destinatario@example.com",
+		Subject:   "Assunto do e-mail",
+		Body:      "Conteúdo do e-mail",
 	}
 	emailJSON, _ := json.Marshal(email)
 

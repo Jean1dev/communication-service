@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/Jean1dev/communication-service/configs"
+	"github.com/Jean1dev/communication-service/internal/dto"
 	"github.com/Jean1dev/communication-service/internal/services"
 )
 
@@ -63,8 +64,8 @@ func searchForPhone(recipient string) (string, error) {
 	return phoneNumber[0].(string), nil
 }
 
-func sendEmail(recipient string, message string) {
-	services.AsyncSend("Notificacao", message, recipient)
+func sendEmail(input dto.MailSenderInputDto) {
+	services.AsyncSend(input)
 }
 
 func sendSMS(message string, recipient string) {
@@ -76,17 +77,18 @@ func sendSMS(message string, recipient string) {
 	services.DispatchSMS(userPhone, message)
 }
 
-func SendCommunications(message string, recipients []string, types []string) {
+func SendCommunications(input dto.MailSenderInputDto, recipients, types []string) {
 	for _, typeCommunication := range types {
 		if typeCommunication == "email" {
 			for _, recipient := range recipients {
-				go sendEmail(recipient, message)
+				input.Recipient = recipient
+				go sendEmail(input)
 			}
 		}
 
 		if typeCommunication == "sms" {
 			for _, recipient := range recipients {
-				go sendSMS(message, recipient)
+				go sendSMS(input.Body, recipient)
 			}
 		}
 	}

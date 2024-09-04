@@ -2,18 +2,18 @@ package services
 
 import (
 	"context"
-	"errors"
 	"log"
 	"os"
 	"time"
 
+	"github.com/Jean1dev/communication-service/internal/dto"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
 	"github.com/mailgun/mailgun-go/v4"
 )
 
-func sendWithMailgun(subject string, body string, recipient string) {
+func sendWithMailgun(subject, recipient, htmlTemplate string) {
 	privateAPIKey := os.Getenv("MAILGUN_KEY")
 	if privateAPIKey == "" {
 		log.Print("MAILGUN_KEY not configured")
@@ -24,8 +24,8 @@ func sendWithMailgun(subject string, body string, recipient string) {
 	mg := mailgun.NewMailgun(domain, privateAPIKey)
 	sender := "Binno apps <equipe@central.binnoapp.com>"
 
-	message := mg.NewMessage(sender, subject, body, recipient)
-	message.SetHtml(Default(subject, body))
+	message := mg.NewMessage(sender, subject, "", recipient)
+	message.SetHtml(htmlTemplate)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -39,7 +39,7 @@ func sendWithMailgun(subject string, body string, recipient string) {
 	log.Printf("ID: %s Resp: %s\n", id, resp)
 }
 
-func sendWithSES(subject string, body string, recipient string) {
+func sendWithSES(subject, recipient, htmlTemplate string) {
 	sess, _ := session.NewSession(&aws.Config{
 		Region: aws.String("us-west-2"),
 	})
@@ -55,7 +55,7 @@ func sendWithSES(subject string, body string, recipient string) {
 		Message: &ses.Message{
 			Body: &ses.Body{
 				Html: &ses.Content{
-					Data: aws.String(Default(subject, body)),
+					Data: aws.String(htmlTemplate),
 				},
 			},
 			Subject: &ses.Content{
@@ -71,21 +71,15 @@ func sendWithSES(subject string, body string, recipient string) {
 	}
 }
 
-func AsyncSend(subject string, body string, recipient string) error {
-	if subject == "" {
-		return errors.New("Subject cannot be empty")
-	}
-	if body == "" {
-		return errors.New("body cannot be empty")
-	}
-	if recipient == "" {
-		return errors.New("recipient cannot be empty")
+func AsyncSend(input dto.MailSenderInputDto) error {
+	if err := input.Validate(); err != nil {
+		return err
 	}
 
-	if recipient == "jeanlucafp@gmail.com" {
-		go sendWithMailgun(subject, body, recipient)
+	if input.Recipient == "jeanlucafp@gmail.com" {
+		go sendWithMailgun(input.Subject, input.Recipient, input.GetTemplate())
 	} else {
-		go sendWithSES(subject, body, recipient)
+		go sendWithSES(input.Subject, input.Recipient, input.GetTemplate())
 	}
 
 	return nil

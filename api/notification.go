@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jean1dev/communication-service/configs"
 	"github.com/Jean1dev/communication-service/internal/application"
+	"github.com/Jean1dev/communication-service/internal/dto"
 )
 
 type NotificationPost struct {
@@ -78,5 +79,8 @@ func doPost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	application.SendCommunications(payload.Desc, users, payload.Comunicacoes)
+	communicationInput := dto.MailSenderInputDto{
+		Body: payload.Desc,
+	}
+	application.SendCommunications(communicationInput, users, payload.Comunicacoes)
 }

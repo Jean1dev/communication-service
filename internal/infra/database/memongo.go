@@ -15,7 +15,7 @@ type FakeRepo struct {
 }
 
 func (f *FakeRepo) Connect() {
-	mongoServer, err := memongo.Start("6.0.5")
+	mongoServer, err := memongo.Start("4.0.5")
 	if err != nil {
 		log.Fatalf(err.Error())
 	}

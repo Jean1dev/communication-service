@@ -12,7 +12,6 @@ import (
 )
 
 func TestEmailHandlerSuccess(t *testing.T) {
-	//os.Setenv("MAILGUN_KEY", "chave-mock")
 	email := dto.MailSenderInputDto{
 		Recipient: "destinatario@example.com",
 		Subject:   "Assunto do e-mail",

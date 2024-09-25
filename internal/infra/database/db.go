@@ -35,7 +35,7 @@ func connect() {
 }
 
 func GetDB() DefaultDatabase {
-	if alreadyConnected == false {
+	if !alreadyConnected {
 		connect()
 	}
 

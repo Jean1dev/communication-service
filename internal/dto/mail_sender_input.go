@@ -11,6 +11,7 @@ type MailSenderInputDto struct {
 	Body            string `json:"message"`
 	Recipient       string `json:"to"`
 	TemplateCode    int    `json:"templateCode"`
+	AttachmentLink  string `json:"attachmentLink"`
 	CustomBodyProps struct {
 		Username    string  `json:"username"`
 		Operation   string  `json:"operation"`

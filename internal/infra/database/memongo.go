@@ -1,10 +1,11 @@
 package database
 
 import (
+	"context"
 	"log"
 	"os"
 
-	"github.com/benweissmann/memongo"
+	"github.com/testcontainers/testcontainers-go/modules/mongodb"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -15,13 +16,18 @@ type FakeRepo struct {
 }
 
 func (f *FakeRepo) Connect() {
-	mongoServer, err := memongo.Start("6.0.5")
+	ctx := context.Background()
+	mongodbContainer, err := mongodb.Run(ctx, "mongo:6")
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
-	//defer mongoServer.Stop()
-	os.Setenv("MONGO_URI", mongoServer.URI())
+	uri, err := mongodbContainer.ConnectionString(ctx)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	os.Setenv("MONGO_URI", uri)
 	f.dbMemo = &MongoRepository{}
 	f.dbMemo.Connect()
 }

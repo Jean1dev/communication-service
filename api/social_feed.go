@@ -58,7 +58,7 @@ func SocialFeedHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func handleGetOne(w http.ResponseWriter, r *http.Request, id string) {
+func handleGetOne(w http.ResponseWriter, _ *http.Request, id string) {
 	post, err := application.FindById(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

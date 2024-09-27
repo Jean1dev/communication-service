@@ -1,9 +1,18 @@
 package services
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
+	"fmt"
+	"io"
 	"log"
+	"mime/multipart"
+	"mime/quotedprintable"
+	"net/http"
+	"net/textproto"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/Jean1dev/communication-service/internal/dto"
@@ -13,7 +22,27 @@ import (
 	"github.com/mailgun/mailgun-go/v4"
 )
 
-func sendWithMailgun(subject, recipient, htmlTemplate string) {
+func downloadAttachment(attachment string) ([]byte, error) {
+	resp, err := http.Get(attachment)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao fazer requisição HTTP: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("erro ao baixar arquivo: status %d", resp.StatusCode)
+	}
+
+	var buf bytes.Buffer
+	_, err = io.Copy(&buf, resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao ler conteúdo do arquivo: %w", err)
+	}
+
+	return buf.Bytes(), nil
+}
+
+func sendWithMailgun(subject, recipient, htmlTemplate, attachment string) {
 	privateAPIKey := os.Getenv("MAILGUN_KEY")
 	if privateAPIKey == "" {
 		log.Print("MAILGUN_KEY not configured")
@@ -27,6 +56,13 @@ func sendWithMailgun(subject, recipient, htmlTemplate string) {
 	message := mg.NewMessage(sender, subject, "", recipient)
 	message.SetHtml(htmlTemplate)
 
+	if attachment != "" {
+		bufferAttchament, err := downloadAttachment(attachment)
+		if err == nil {
+			message.AddBufferAttachment("anexo.pdf", bufferAttchament)
+		}
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
@@ -39,7 +75,70 @@ func sendWithMailgun(subject, recipient, htmlTemplate string) {
 	log.Printf("ID: %s Resp: %s\n", id, resp)
 }
 
-func sendWithSES(subject, recipient, htmlTemplate string) {
+func sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment string) {
+	sess, _ := session.NewSession(&aws.Config{
+		Region: aws.String("us-west-2"),
+	})
+
+	svc := ses.New(sess)
+
+	var emailRaw bytes.Buffer
+	writer := multipart.NewWriter(&emailRaw)
+
+	emailRaw.WriteString(fmt.Sprintf("From: JeanLuca <jeanlucafp@gmail.com>\n"))
+	emailRaw.WriteString(fmt.Sprintf("To: %s\n", recipient))
+	emailRaw.WriteString(fmt.Sprintf("Subject: %s\n", subject))
+	emailRaw.WriteString("MIME-Version: 1.0\n")
+	emailRaw.WriteString(fmt.Sprintf("Content-Type: multipart/mixed; boundary=%s\n\n", writer.Boundary()))
+
+	mimeHeaders := textproto.MIMEHeader{}
+	mimeHeaders.Set("Content-Type", "text/html; charset=UTF-8")
+	mimeHeaders.Set("Content-Transfer-Encoding", "quoted-printable")
+
+	part, _ := writer.CreatePart(mimeHeaders)
+	qpWriter := quotedprintable.NewWriter(part)
+	qpWriter.Write([]byte(htmlTemplate))
+	qpWriter.Close()
+
+	bufferAttchment, err := downloadAttachment(attachment)
+	if err != nil {
+		log.Printf("Erro ao baixar o anexo: %s", err.Error())
+		return
+	}
+
+	encodedFile := base64.StdEncoding.EncodeToString(bufferAttchment)
+
+	mimeHeaders = textproto.MIMEHeader{}
+	mimeHeaders.Set("Content-Type", fmt.Sprintf("application/octet-stream; name=%s", filepath.Base("anexo.pdf")))
+	mimeHeaders.Set("Content-Transfer-Encoding", "base64")
+	mimeHeaders.Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filepath.Base("anexo.pdf")))
+
+	part, _ = writer.CreatePart(mimeHeaders)
+	part.Write([]byte(encodedFile))
+
+	writer.Close()
+
+	rawMessage := &ses.RawMessage{
+		Data: emailRaw.Bytes(),
+	}
+
+	input := &ses.SendRawEmailInput{
+		RawMessage: rawMessage,
+	}
+	_, err = svc.SendRawEmail(input)
+	if err != nil {
+		log.Printf("Não foi possível enviar o e-mail: %s", err.Error())
+	} else {
+		log.Println("E-mail enviado com sucesso!")
+	}
+}
+
+func sendWithSES(subject, recipient, htmlTemplate, attachment string) {
+	if attachment != "" {
+		sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment)
+		return
+	}
+
 	sess, _ := session.NewSession(&aws.Config{
 		Region: aws.String("us-west-2"),
 	})
@@ -77,9 +176,9 @@ func AsyncSend(input dto.MailSenderInputDto) error {
 	}
 
 	if input.Recipient == "jeanlucafp@gmail.com" {
-		go sendWithMailgun(input.Subject, input.Recipient, input.GetTemplate())
+		go sendWithMailgun(input.Subject, input.Recipient, input.GetTemplate(), input.AttachmentLink)
 	} else {
-		go sendWithSES(input.Subject, input.Recipient, input.GetTemplate())
+		go sendWithSES(input.Subject, input.Recipient, input.GetTemplate(), input.AttachmentLink)
 	}
 
 	return nil

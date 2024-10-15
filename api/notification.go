@@ -69,7 +69,7 @@ func doPost(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 	users := []string{payload.User}
-	if len(payload.Caixinhas) > 1 {
+	if len(payload.Caixinhas) > 0 {
 		users = application.NewNofiticationForCaixinha(payload.Desc, payload.User, payload.Caixinhas)
 	} else {
 		err = application.InsertNewNotification(payload.Desc, payload.User)

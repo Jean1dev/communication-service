@@ -2,7 +2,6 @@ package application
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -13,6 +12,7 @@ import (
 	"github.com/Jean1dev/communication-service/configs"
 	"github.com/Jean1dev/communication-service/internal/dto"
 	"github.com/Jean1dev/communication-service/internal/services"
+	"github.com/valyala/fastjson"
 )
 
 func searchForPhone(recipient string) (string, error) {
@@ -45,36 +45,31 @@ func searchForPhone(recipient string) (string, error) {
 		return "", err
 	}
 
-	fmt.Println("Resposta:", string(body))
-
-	var data map[string]interface{}
-	err = json.Unmarshal(body, &data)
-
+	var p fastjson.Parser
+	v, err := p.Parse(string(body))
 	if err != nil {
-		log.Println("Erro ao fazer o unmarshal do JSON:", err)
-		return "", err
-	}
-
-	phoneNumber, ok := data["phoneNumber"].([]interface{})
-	if !ok {
 		log.Println("Erro ao acessar o campo 'phoneNumber'")
 		return "", errors.New("Erro ao acessar o campo 'phoneNumber'")
 	}
 
-	return phoneNumber[0].(string), nil
+	phoneNumber := string(v.GetStringBytes("phoneNumber"))
+	return phoneNumber, nil
 }
 
 func sendEmail(input dto.MailSenderInputDto) {
 	services.AsyncSend(input)
 }
 
-func sendSMS(message string, recipient string) {
-	userPhone, err := searchForPhone(recipient)
-	if err != nil {
-		return
+func sendSMS(message string, recipient []string) {
+	userPhones := make([]string, 0)
+	for _, recipientNumber := range recipient {
+		userPhone, err := searchForPhone(recipientNumber)
+		if err == nil {
+			userPhones = append(userPhones, userPhone)
+		}
 	}
 
-	services.DispatchSMS(userPhone, message)
+	services.DispatchSMS(userPhones, message)
 }
 
 func SendCommunications(input dto.MailSenderInputDto, recipients, types []string) {
@@ -87,9 +82,7 @@ func SendCommunications(input dto.MailSenderInputDto, recipients, types []string
 		}
 
 		if typeCommunication == "sms" {
-			for _, recipient := range recipients {
-				go sendSMS(input.Body, recipient)
-			}
+			go sendSMS(input.Body, recipients)
 		}
 	}
 }

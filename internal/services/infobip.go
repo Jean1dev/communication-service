@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -8,14 +9,63 @@ import (
 	"strings"
 )
 
-func DispatchSMS(to string, text string) {
+type MessagePayload struct {
+	Messages []Message `json:"messages"`
+}
+
+type Message struct {
+	Destinations []Destination `json:"destinations"`
+	From         string        `json:"from"`
+	Text         string        `json:"text"`
+}
+
+type Destination struct {
+	To string `json:"to"`
+}
+
+func numberFormat(number string) string {
+	if !strings.HasPrefix(number, "55") {
+		number = "55" + number
+	}
+	return number
+}
+
+func buildPayload(to []string, text string) MessagePayload {
+	destinations := make([]Destination, len(to))
+	for i, number := range to {
+		destinations[i] = Destination{To: numberFormat(number)}
+	}
+
+	message := Message{
+		Destinations: destinations,
+		From:         "ServiceSMS",
+		Text:         text,
+	}
+
+	return MessagePayload{Messages: []Message{message}}
+}
+
+func getMyNumber() []string {
+	return []string{os.Getenv("MY_NUMBER")}
+}
+
+func DispatchSMS(to []string, text string) {
 	url := "https://vj44dv.api.infobip.com/sms/2/text/advanced"
 	method := "POST"
 
-	payload := strings.NewReader(fmt.Sprintf(`{"messages":[{"destinations":[{"to":"%s"}],"from":"ServiceSMS","text":"%s"}]}`, to, text))
+	if len(to) == 0 {
+		to = getMyNumber()
+	}
+
+	messagePayload := buildPayload(to, text)
+	payload, err := json.Marshal(messagePayload)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	client := &http.Client{}
-	req, err := http.NewRequest(method, url, payload)
+	req, err := http.NewRequest(method, url, strings.NewReader(string(payload)))
 
 	if err != nil {
 		fmt.Println(err)

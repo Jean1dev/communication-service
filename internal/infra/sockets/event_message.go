@@ -12,6 +12,7 @@ type EventHandler func(event EventMessage, c *ClientSocket) error
 const (
 	EventMyNotifications         = "my_notifications"
 	EventSentNoficationsCaixinha = "notify_all_members_caixinha"
+	ChatEvent                    = "chat"
 )
 
 type SendMessageEvent struct {

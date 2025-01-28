@@ -50,6 +50,7 @@ func NewManager() *ConnectionManager {
 }
 
 func (c *ConnectionManager) setupEventHandlers() {
+	c.handlers[ChatEvent] = RealTimeChatHandler()
 	c.handlers[EventMyNotifications] = MyNotificationsEventHandler()
 	c.handlers[EventSentNoficationsCaixinha] = SentNoficationsCaixinha()
 }

@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/Jean1dev/communication-service/configs"
@@ -104,9 +105,22 @@ func handleLike(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func parsePageQuery(pageStr string) int {
+	if pageStr == "" {
+		return 0
+	}
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		return 0
+	}
+	return page
+}
+
 func handleGet(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("user")
-	err, result := application.MyFeed(username)
+	page := parsePageQuery(r.URL.Query().Get("page"))
+
+	result, err := application.FindPaginatedPosts(username, page, 5)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

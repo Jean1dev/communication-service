@@ -46,6 +46,12 @@ type AuthorEntity struct {
 	Name   string `json:"name"`
 }
 
+type PaginatedPost struct {
+	Posts   []PostEntity `json:"data"`
+	HasMore bool         `json:"hasMore"`
+	Lenght  int          `json:"lenght"`
+}
+
 func NewComment(user string, avatar string, comment string) CommentEntity {
 	author := &AuthorEntity{
 		Avatar: avatar,
@@ -187,37 +193,24 @@ func AddLike(postId string) error {
 	return nil
 }
 
-func MyFeed(username string) (error, []PostEntity) {
-	db := database.GetDB()
-
-	log.Printf("buscando posts de %s", username)
-
-	opts := options.Find().SetSort(bson.D{{Key: "_id", Value: -1}})
-	err, cursor := db.FindAll(postCollection, bson.D{}, opts)
-	if err != nil {
-		log.Panic(err)
-	}
-
+func marshalMongoResult(data *mongo.Cursor) ([]PostEntity, error) {
 	var results []PostEntity
-	for cursor.Next(context.Background()) {
+	for data.Next(context.Background()) {
 		var doc bson.M
-		err := cursor.Decode(&doc)
+		err := data.Decode(&doc)
 		if err != nil {
-			log.Print(err)
-			return err, nil
+			return nil, err
 		}
 
 		jsonData, err := bson.MarshalExtJSON(doc, false, false)
 		if err != nil {
-			log.Print(err)
-			return err, nil
+			return nil, err
 		}
 
 		var post PostEntity
 		err = json.Unmarshal(jsonData, &post)
 		if err != nil {
-			log.Print(err)
-			return err, nil
+			return nil, err
 		}
 
 		post.Id = doc["_id"].(primitive.ObjectID).Hex()
@@ -225,7 +218,57 @@ func MyFeed(username string) (error, []PostEntity) {
 		results = append(results, post)
 	}
 
-	return nil, results
+	return results, nil
+}
+
+func MyFeed(username string) ([]PostEntity, error) {
+	db := database.GetDB()
+
+	log.Printf("buscando posts de %s", username)
+
+	opts := options.Find().SetSort(bson.D{{Key: "_id", Value: -1}})
+	err, cursor := db.FindAll(postCollection, bson.D{}, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	results, err := marshalMongoResult(cursor)
+	if err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
+
+func FindPaginatedPosts(username string, page, limit int) (*PaginatedPost, error) {
+	db := database.GetDB()
+
+	count, err := db.CountDocuments(postCollection, bson.D{})
+	if err != nil {
+		return nil, err
+	}
+
+	hasMore := count > (page+1)*limit
+
+	opts := options.Find().SetSort(bson.D{{Key: "_id", Value: -1}})
+	opts.SetSkip(int64(page * limit))
+	opts.SetLimit(int64(limit))
+
+	err, cursor := db.FindAll(postCollection, bson.D{}, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	results, err := marshalMongoResult(cursor)
+	if err != nil {
+		return nil, err
+	}
+
+	return &PaginatedPost{
+		Posts:   results,
+		HasMore: hasMore,
+		Lenght:  len(results),
+	}, nil
 }
 
 func calculateDuration(dateString string) string {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -27,6 +28,8 @@ func numberFormat(number string) string {
 	if !strings.HasPrefix(number, "55") {
 		number = "55" + number
 	}
+
+	log.Printf("Number formatted: %s", number)
 	return number
 }
 

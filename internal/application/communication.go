@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/Jean1dev/communication-service/configs"
@@ -62,10 +63,11 @@ func sendEmail(input dto.MailSenderInputDto) {
 
 func sendSMS(message string, recipient []string) {
 	userPhones := make([]string, 0)
-	for _, recipientNumber := range recipient {
-		userPhone, err := searchForPhone(recipientNumber)
-		if err == nil {
-			userPhones = append(userPhones, userPhone)
+	for _, recipient := range recipient {
+		if phone, err := strconv.Atoi(recipient); err == nil {
+			userPhones = append(userPhones, strconv.Itoa(phone))
+		} else if phone, err := searchForPhone(recipient); err == nil {
+			userPhones = append(userPhones, phone)
 		}
 	}
 

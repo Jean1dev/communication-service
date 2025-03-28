@@ -41,6 +41,7 @@ func setupAPI() {
 
 	http.HandleFunc("/notificacao", sentryHandler.HandleFunc(api.NotificationHandler))
 	http.HandleFunc("/notificacao/mark-as-read", sentryHandler.HandleFunc(api.NotificationHandler))
+	http.HandleFunc("/notificacao/sms", sentryHandler.HandleFunc(api.NotificationHandler))
 
 	http.HandleFunc("/social-feed", sentryHandler.HandleFunc(api.SocialFeedHandler))
 	http.HandleFunc("/social-feed/", sentryHandler.HandleFunc(api.SocialFeedHandler))

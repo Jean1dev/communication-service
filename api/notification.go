@@ -17,6 +17,11 @@ type NotificationPost struct {
 	Comunicacoes []string `json:"types"`
 }
 
+type NotificationSMS struct {
+	Desc       string   `json:"desc"`
+	Recipients []string `json:"recipients"`
+}
+
 type MarkNotificationAsRead struct {
 	User string   `json:"user"`
 	All  bool     `json:"all"`
@@ -30,6 +35,11 @@ func NotificationHandler(w http.ResponseWriter, r *http.Request) {
 
 		if strings.HasPrefix(r.URL.Path, "/notificacao/mark-as-read") {
 			markAllAsRead(w, r)
+			return
+		}
+
+		if strings.HasPrefix(r.URL.Path, "/notificacao/sms") {
+			sendSMS(w, r)
 			return
 		}
 
@@ -83,4 +93,30 @@ func doPost(w http.ResponseWriter, r *http.Request) {
 		Body: payload.Desc,
 	}
 	application.SendCommunications(communicationInput, users, payload.Comunicacoes)
+}
+
+func removeSpecialCaracteres(numbers []string) []string {
+	for i, number := range numbers {
+		number = strings.ReplaceAll(number, "(", "")
+		number = strings.ReplaceAll(number, ")", "")
+		number = strings.ReplaceAll(number, "-", "")
+		number = strings.ReplaceAll(number, " ", "")
+		numbers[i] = number
+	}
+	return numbers
+}
+
+func sendSMS(w http.ResponseWriter, r *http.Request) {
+	var payload NotificationSMS
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	communicationInput := dto.MailSenderInputDto{
+		Body: payload.Desc,
+	}
+
+	application.SendCommunications(communicationInput, removeSpecialCaracteres(payload.Recipients), []string{"sms"})
+	w.WriteHeader(http.StatusOK)
 }

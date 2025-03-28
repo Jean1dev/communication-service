@@ -19,12 +19,12 @@ func (f *FakeRepo) Connect() {
 	ctx := context.Background()
 	mongodbContainer, err := mongodb.Run(ctx, "mongo:6")
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s", err.Error())
 	}
 
 	uri, err := mongodbContainer.ConnectionString(ctx)
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s", err.Error())
 	}
 
 	os.Setenv("MONGO_URI", uri)

@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/Jean1dev/communication-service/internal/infra/database"
 )
 
 type MessagePayload struct {
@@ -27,6 +30,8 @@ func numberFormat(number string) string {
 	if !strings.HasPrefix(number, "55") {
 		number = "55" + number
 	}
+
+	log.Printf("Number formatted: %s", number)
 	return number
 }
 
@@ -88,5 +93,21 @@ func DispatchSMS(to []string, text string) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(string(body))
+
+	go auditMessage(string(body))
+}
+
+func auditMessage(messageStr string) {
+	db := database.GetDB()
+
+	document := map[string]interface{}{
+		"result": messageStr,
+	}
+
+	if err := db.Insert(document, "infobip_audit"); err != nil {
+		log.Printf("Error inserting message into database: %v", err)
+		return
+	}
+
+	log.Printf("Message inserted into database: %s", messageStr)
 }

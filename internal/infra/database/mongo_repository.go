@@ -22,7 +22,7 @@ func (m *MongoRepository) Connect() {
 
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s", err.Error())
 	}
 
 	database := client.Database("communication")

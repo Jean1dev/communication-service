@@ -55,3 +55,7 @@ func (f *FakeRepo) CountDocuments(collection string, filter bson.D) (int, error)
 func (f *FakeRepo) UpdateMany(collection string, filter bson.D, update bson.D) error {
 	return f.dbMemo.UpdateMany(collection, filter, update)
 }
+
+func (f *FakeRepo) DeleteOne(collection string, filter bson.D) (int64, error) {
+	return f.dbMemo.DeleteOne(collection, filter)
+}

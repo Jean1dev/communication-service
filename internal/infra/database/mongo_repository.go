@@ -98,3 +98,16 @@ func (m *MongoRepository) UpdateMany(collection string, filter bson.D, update bs
 	log.Printf("ModifiedCount : %v\n", result.ModifiedCount)
 	return nil
 }
+
+func (m *MongoRepository) DeleteOne(collection string, filter bson.D) (int64, error) {
+	coll := m.db.Collection(collection)
+	result, err := coll.DeleteOne(context.TODO(), filter)
+
+	if err != nil {
+		log.Print(err)
+		return 0, err
+	}
+
+	log.Printf("DeletedCount: %v\n", result.DeletedCount)
+	return result.DeletedCount, nil
+}

@@ -21,6 +21,7 @@ type DefaultDatabase interface {
 	UpdateOne(collection string, filter bson.D, update bson.D) error
 	UpdateMany(collection string, filter bson.D, update bson.D) error
 	CountDocuments(collection string, filter bson.D) (int, error)
+	DeleteOne(collection string, filter bson.D) (int64, error)
 }
 
 func connect() {

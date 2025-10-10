@@ -29,8 +29,6 @@ func AlertHandler(w http.ResponseWriter, r *http.Request) {
 		handleCreateAlert(w, r)
 	case http.MethodGet:
 		handleGetAlerts(w, r)
-	case http.MethodPut:
-		handleUpdateAlert(w, r)
 	case http.MethodDelete:
 		handleDeleteAlert(w, r)
 	default:
@@ -93,32 +91,6 @@ func handleGetAlerts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(responses)
 }
 
-func handleUpdateAlert(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path
-	alertID := strings.TrimPrefix(path, "/alerts/")
-
-	if alertID == "" || alertID == "/alerts" {
-		http.Error(w, "alert id is required in path", http.StatusBadRequest)
-		return
-	}
-
-	var input dto.UpdateAlertInput
-	err := json.NewDecoder(r.Body).Decode(&input)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	alert, err := alertService.UpdateAlert(alertID, input)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	response := alert.ToResponse()
-	json.NewEncoder(w).Encode(response)
-}
-
 func handleDeleteAlert(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	alertID := strings.TrimPrefix(path, "/alerts/")
@@ -162,4 +134,23 @@ func AlertToggleStatusHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	response := alert.ToResponse()
 	json.NewEncoder(w).Encode(response)
+}
+
+func AlertsGroupedHandler(w http.ResponseWriter, r *http.Request) {
+	initAlertService()
+
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	groupedAlerts, err := alertService.GetAllAlertsGroupedByEmail()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(groupedAlerts)
 }

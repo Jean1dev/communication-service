@@ -72,22 +72,22 @@ func (r *AlertRepository) FindByUserEmail(userEmail string) ([]dto.Alert, error)
 	return alerts, nil
 }
 
-func (r *AlertRepository) Update(id string, alert *dto.Alert) error {
-	alert.UpdatedAt = time.Now()
+func (r *AlertRepository) FindAll() ([]dto.Alert, error) {
+	filter := bson.D{{Key: "active", Value: true}}
+	opts := options.Find().SetSort(bson.D{{Key: "user_email", Value: 1}, {Key: "created_at", Value: -1}})
 
-	filter := bson.D{{Key: "_id", Value: id}}
-	update := bson.D{{Key: "$set", Value: bson.D{
-		{Key: "type", Value: alert.Type},
-		{Key: "condition", Value: alert.Condition},
-		{Key: "updated_at", Value: alert.UpdatedAt},
-	}}}
+	_, cursor := r.db.FindAll(AlertsCollection, filter, opts)
+	if cursor == nil {
+		return []dto.Alert{}, nil
+	}
+	defer cursor.Close(context.TODO())
 
-	err := r.db.UpdateOne(AlertsCollection, filter, update)
-	if err != nil {
-		return err
+	var alerts []dto.Alert
+	if err := cursor.All(context.TODO(), &alerts); err != nil {
+		return nil, err
 	}
 
-	return nil
+	return alerts, nil
 }
 
 func (r *AlertRepository) Delete(id string) error {

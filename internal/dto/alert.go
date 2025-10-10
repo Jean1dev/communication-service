@@ -29,11 +29,6 @@ type CreateAlertInput struct {
 	Condition json.RawMessage `json:"condition"`
 }
 
-type UpdateAlertInput struct {
-	Type      *AlertType       `json:"type,omitempty"`
-	Condition *json.RawMessage `json:"condition,omitempty"`
-}
-
 type AlertResponse struct {
 	ID        string          `json:"id"`
 	UserEmail string          `json:"user_email"`
@@ -42,6 +37,11 @@ type AlertResponse struct {
 	Active    bool            `json:"active"`
 	CreatedAt time.Time       `json:"created_at"`
 	UpdatedAt time.Time       `json:"updated_at"`
+}
+
+type GroupedAlertsResponse struct {
+	UserEmail string          `json:"user_email"`
+	Alerts    []AlertResponse `json:"alerts"`
 }
 
 func (a *Alert) ToResponse() AlertResponse {

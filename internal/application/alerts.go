@@ -70,41 +70,26 @@ func (s *AlertService) GetAlertsByUserEmail(userEmail string) ([]dto.Alert, erro
 	return alerts, nil
 }
 
-func (s *AlertService) UpdateAlert(id string, input dto.UpdateAlertInput) (*dto.Alert, error) {
-	if id == "" {
-		return nil, errors.New("alert id is required")
-	}
-
-	alert, err := s.alertRepo.FindByID(id)
+func (s *AlertService) GetAllAlertsGroupedByEmail() ([]dto.GroupedAlertsResponse, error) {
+	alerts, err := s.alertRepo.FindAll()
 	if err != nil {
 		return nil, err
 	}
 
-	if input.Type != nil {
-		if *input.Type != dto.AlertTypeSMS && *input.Type != dto.AlertTypeEmail && *input.Type != dto.AlertTypeTelegram {
-			return nil, errors.New("invalid alert type, must be sms, email or telegram")
-		}
-		alert.Type = *input.Type
+	grouped := make(map[string][]dto.AlertResponse)
+	for _, alert := range alerts {
+		grouped[alert.UserEmail] = append(grouped[alert.UserEmail], alert.ToResponse())
 	}
 
-	if input.Condition != nil {
-		if len(*input.Condition) == 0 {
-			return nil, errors.New("condition cannot be empty")
-		}
-		alert.Condition = *input.Condition
+	var result []dto.GroupedAlertsResponse
+	for email, alertsList := range grouped {
+		result = append(result, dto.GroupedAlertsResponse{
+			UserEmail: email,
+			Alerts:    alertsList,
+		})
 	}
 
-	err = s.alertRepo.Update(id, alert)
-	if err != nil {
-		return nil, err
-	}
-
-	updatedAlert, err := s.alertRepo.FindByID(id)
-	if err != nil {
-		return nil, err
-	}
-
-	return updatedAlert, nil
+	return result, nil
 }
 
 func (s *AlertService) DeleteAlert(id string) error {

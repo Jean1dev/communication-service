@@ -47,6 +47,12 @@ func setupAPI() {
 	http.HandleFunc("/social-feed/", sentryHandler.HandleFunc(api.SocialFeedHandler))
 	http.HandleFunc("/social-feed/like", sentryHandler.HandleFunc(api.SocialFeedHandler))
 	http.HandleFunc("/social-feed/comment", sentryHandler.HandleFunc(api.SocialFeedHandler))
+
+	http.HandleFunc("/alerts/toggle/", sentryHandler.HandleFunc(api.AlertToggleStatusHandler))
+	http.HandleFunc("/alerts/grouped", sentryHandler.HandleFunc(api.AlertsGroupedHandler))
+	http.HandleFunc("/alerts", sentryHandler.HandleFunc(api.AlertHandler))
+	http.HandleFunc("/alerts/", sentryHandler.HandleFunc(api.AlertHandler))
+
 	socketsManager := sockets.InitManagerGlobally()
 	http.HandleFunc("/ws", socketsManager.ServeWS)
 }

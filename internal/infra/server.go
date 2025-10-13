@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Jean1dev/communication-service/api"
+	"github.com/Jean1dev/communication-service/configs"
 	"github.com/Jean1dev/communication-service/internal/infra/sockets"
 	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
@@ -36,23 +37,23 @@ func setupAPI() {
 	}
 
 	sentryHandler := sentryhttp.New(sentryhttp.Options{})
-	http.HandleFunc("/email", sentryHandler.HandleFunc(api.EmailHandler))
-	http.HandleFunc("/email-stats", sentryHandler.HandleFunc(api.EmailEstatisticasHandler))
+	http.HandleFunc("/email", configs.CORSMiddleware(sentryHandler.HandleFunc(api.EmailHandler)))
+	http.HandleFunc("/email-stats", configs.CORSMiddleware(sentryHandler.HandleFunc(api.EmailEstatisticasHandler)))
 
-	http.HandleFunc("/notificacao", sentryHandler.HandleFunc(api.NotificationHandler))
-	http.HandleFunc("/notificacao/mark-as-read", sentryHandler.HandleFunc(api.NotificationHandler))
-	http.HandleFunc("/notificacao/sms", sentryHandler.HandleFunc(api.NotificationHandler))
+	http.HandleFunc("/notificacao", configs.CORSMiddleware(sentryHandler.HandleFunc(api.NotificationHandler)))
+	http.HandleFunc("/notificacao/mark-as-read", configs.CORSMiddleware(sentryHandler.HandleFunc(api.NotificationHandler)))
+	http.HandleFunc("/notificacao/sms", configs.CORSMiddleware(sentryHandler.HandleFunc(api.NotificationHandler)))
 
-	http.HandleFunc("/social-feed", sentryHandler.HandleFunc(api.SocialFeedHandler))
-	http.HandleFunc("/social-feed/", sentryHandler.HandleFunc(api.SocialFeedHandler))
-	http.HandleFunc("/social-feed/like", sentryHandler.HandleFunc(api.SocialFeedHandler))
-	http.HandleFunc("/social-feed/comment", sentryHandler.HandleFunc(api.SocialFeedHandler))
+	http.HandleFunc("/social-feed", configs.CORSMiddleware(sentryHandler.HandleFunc(api.SocialFeedHandler)))
+	http.HandleFunc("/social-feed/", configs.CORSMiddleware(sentryHandler.HandleFunc(api.SocialFeedHandler)))
+	http.HandleFunc("/social-feed/like", configs.CORSMiddleware(sentryHandler.HandleFunc(api.SocialFeedHandler)))
+	http.HandleFunc("/social-feed/comment", configs.CORSMiddleware(sentryHandler.HandleFunc(api.SocialFeedHandler)))
 
-	http.HandleFunc("/alerts/toggle/", sentryHandler.HandleFunc(api.AlertToggleStatusHandler))
-	http.HandleFunc("/alerts/grouped", sentryHandler.HandleFunc(api.AlertsGroupedHandler))
-	http.HandleFunc("/alerts", sentryHandler.HandleFunc(api.AlertHandler))
-	http.HandleFunc("/alerts/", sentryHandler.HandleFunc(api.AlertHandler))
+	http.HandleFunc("/alerts/toggle/", configs.CORSMiddleware(sentryHandler.HandleFunc(api.AlertToggleStatusHandler)))
+	http.HandleFunc("/alerts/grouped", configs.CORSMiddleware(sentryHandler.HandleFunc(api.AlertsGroupedHandler)))
+	http.HandleFunc("/alerts", configs.CORSMiddleware(sentryHandler.HandleFunc(api.AlertHandler)))
+	http.HandleFunc("/alerts/", configs.CORSMiddleware(sentryHandler.HandleFunc(api.AlertHandler)))
 
 	socketsManager := sockets.InitManagerGlobally()
-	http.HandleFunc("/ws", socketsManager.ServeWS)
+	http.HandleFunc("/ws", configs.CORSMiddleware(socketsManager.ServeWS))
 }

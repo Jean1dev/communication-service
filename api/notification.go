@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Jean1dev/communication-service/configs"
 	"github.com/Jean1dev/communication-service/internal/application"
 	"github.com/Jean1dev/communication-service/internal/dto"
 )
@@ -29,7 +28,6 @@ type MarkNotificationAsRead struct {
 }
 
 func NotificationHandler(w http.ResponseWriter, r *http.Request) {
-	configs.AllowAllOrigins(w, r)
 	method := r.Method
 	if method == "POST" {
 

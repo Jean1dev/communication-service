@@ -16,6 +16,11 @@ type CustomBodyPropsDto struct {
 	PixCopiaECola string `json:"pixCopiaECola"`
 	PixQRCode     string `json:"pixQRCode"`
 	LinkPagamento string `json:"linkPagamento"`
+
+	MainMessage string `json:"mainMessage"`
+	ContactLink string `json:"contactLink"`
+	PrivacyLink string `json:"privacyLink"`
+	TermsLink   string `json:"termsLink"`
 }
 
 type MailSenderInputDto struct {
@@ -56,6 +61,17 @@ func (m *MailSenderInputDto) GetTemplate() string {
 			m.CustomBodyProps.PixCopiaECola,
 			m.CustomBodyProps.Username,
 			m.Body,
+		)
+	}
+
+	if m.TemplateCode == 3 {
+		return templates.MeConecteiTemplate(
+			m.CustomBodyProps.Username,
+			m.Recipient,
+			m.CustomBodyProps.MainMessage,
+			m.CustomBodyProps.ContactLink,
+			m.CustomBodyProps.PrivacyLink,
+			m.CustomBodyProps.TermsLink,
 		)
 	}
 	return templates.Default(m.Subject, m.Body)

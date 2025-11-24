@@ -76,3 +76,70 @@ func EmailHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
+
+func MeConecteiEmailHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var requestBody struct {
+		Email       string `json:"email"`
+		MainMessage string `json:"mainMessage"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&requestBody)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if requestBody.Email == "" {
+		http.Error(w, "email is required", http.StatusBadRequest)
+		return
+	}
+
+	emailData := dto.MailSenderInputDto{
+		Subject:      "Bem-vindo ao Me Conectei!",
+		Recipient:    requestBody.Email,
+		TemplateCode: 3,
+		CustomBodyProps: dto.CustomBodyPropsDto{
+			Username:    requestBody.Email,
+			MainMessage: requestBody.MainMessage,
+			ContactLink: "https://meconectei.com.br/#contato",
+			PrivacyLink: "https://meconectei.com.br/privacidade",
+			TermsLink:   "https://meconectei.com.br/privacidade",
+		},
+	}
+
+	err = services.AsyncSend(emailData)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	db := database.GetDB()
+
+	emailEntity := struct {
+		To        string             `json:"to"`
+		CreatedAt primitive.DateTime `bson:"createdAt" json:"createdAt"`
+	}{
+		CreatedAt: primitive.NewDateTimeFromTime(time.Now()),
+		To:        emailData.Recipient,
+	}
+
+	go db.Insert(emailEntity, email_collection)
+
+	response := struct {
+		Status  string `json:"status"`
+		Message string `json:"message"`
+		Email   string `json:"email"`
+	}{
+		Status:  "success",
+		Message: "Email de teste enviado com sucesso usando o template Me Conectei",
+		Email:   requestBody.Email,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}

@@ -374,3 +374,151 @@ func Default(subject string, message string) string {
 
 	return result.String()
 }
+
+func MeConecteiTemplate(username, email, mainMessage, contactLink, privacyLink, termsLink string) string {
+	htmlTemplate := `<!DOCTYPE html>
+<html style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+<head>
+<meta name="viewport" content="width=device-width" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Me Conectei</title>
+
+<style type="text/css">
+img {
+max-width: 100%;
+}
+body {
+-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important; height: 100%; line-height: 1.6em;
+}
+body {
+background-color: #f6f6f6;
+}
+@media only screen and (max-width: 640px) {
+  body {
+	padding: 0 !important;
+  }
+  .container {
+	padding: 0 !important; width: 100% !important;
+  }
+  .content {
+	padding: 0 !important;
+  }
+  .header-logo {
+	max-width: 150px !important;
+  }
+  .header-username {
+	font-size: 14px !important;
+  }
+}
+</style>
+</head>
+
+<body itemscope itemtype="http://schema.org/EmailMessage" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important; height: 100%; line-height: 1.6em; background-color: #f6f6f6; margin: 0;" bgcolor="#f6f6f6">
+
+<table class="body-wrap" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; background-color: #f6f6f6; margin: 0;" bgcolor="#f6f6f6"><tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;"><td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;" valign="top"></td>
+	<td class="container" width="600" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; display: block !important; max-width: 600px !important; clear: both !important; margin: 0 auto;" valign="top">
+	  <div class="content" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; max-width: 600px; display: block; margin: 0 auto; padding: 0;">
+		<table class="main" width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; border-radius: 0; background-color: #fff; margin: 0; border: none;" bgcolor="#fff">
+		  <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+			<td class="header" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; background-color: #4A90E2; margin: 0; padding: 15px 20px;" bgcolor="#4A90E2" valign="top">
+			  <table width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+				  <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: middle; margin: 0;" valign="middle">
+					<img src="https://meconectei.com.br/wp-content/uploads/2023/08/logo-1024x232.png" alt="Me Conectei" class="header-logo" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; max-width: 200px; height: auto; margin: 0; display: block;" />
+				  </td>
+				  <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: middle; text-align: right; margin: 0;" align="right" valign="middle">
+					<span class="header-username" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 16px; font-weight: 600; color: #fff; margin: 0;">{{.Username}}</span>
+				  </td>
+				</tr>
+			  </table>
+			</td>
+		  </tr>
+		  <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+			<td class="content-wrap" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 40px 20px;" valign="top">
+			  <table width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+				  <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; text-align: center; margin: 0; padding: 0 0 30px; color: #666;" align="center" valign="top">
+					<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #666; line-height: 1.6em; margin: 0 0 10px;">Em caso de problemas, estamos aqui para ajudar. <a href="{{.ContactLink}}" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #348eda; text-decoration: underline; margin: 0;">Entre em contato conosco.</a></p>
+				  </td>
+				</tr>
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+				  <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; text-align: center; margin: 0; padding: 0 0 20px;" align="center" valign="top">
+					<table cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0 auto;">
+					  <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+						<td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: middle; margin: 0; padding: 0 10px;" valign="middle">
+						  <span style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 32px; margin: 0;">📱</span>
+						</td>
+						<td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: middle; margin: 0; padding: 0 10px;" valign="middle">
+						  <span style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 32px; margin: 0;">🤖</span>
+						</td>
+					  </tr>
+					</table>
+				  </td>
+				</tr>
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+				  <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; text-align: center; margin: 0; padding: 0 0 40px;" align="center" valign="top">
+					<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #333; line-height: 1.6em; margin: 0;">{{.MainMessage}}</p>
+				  </td>
+				</tr>
+			  </table>
+			</td>
+		  </tr>
+		  <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+			<td class="footer" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; vertical-align: top; margin: 0; padding: 30px 20px; background-color: #fff; border-top: 1px solid #eee;" bgcolor="#fff" valign="top">
+			  <table width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; margin: 0;">
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; margin: 0;">
+				  <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; vertical-align: top; margin: 0; padding: 0 0 15px; color: #999; line-height: 1.6em;" valign="top">
+					<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; line-height: 1.6em; margin: 0 0 10px;">Enviamos este e-mail porque o endereço <a href="mailto:{{.Email}}" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #348eda; text-decoration: underline; margin: 0;">{{.Email}}</a> está vinculado a uma conta do Me Conectei.</p>
+				  </td>
+				</tr>
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; margin: 0;">
+				  <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; vertical-align: top; margin: 0; padding: 0 0 15px; color: #999; line-height: 1.6em;" valign="top">
+					<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; line-height: 1.6em; margin: 0 0 10px;"><a href="{{.ContactLink}}" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #348eda; text-decoration: underline; margin: 0;">Configure suas notificações de e-mail</a> para escolher quais mensagens quer receber.</p>
+				  </td>
+				</tr>
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; margin: 0;">
+				  <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; vertical-align: top; margin: 0; padding: 0; color: #999; line-height: 1.6em;" valign="top">
+					<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; line-height: 1.6em; margin: 0;">Saiba como cuidamos da sua <a href="{{.PrivacyLink}}" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #348eda; text-decoration: underline; margin: 0;">Privacidade</a> e consulte os <a href="{{.TermsLink}}" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #348eda; text-decoration: underline; margin: 0;">Termos e condições</a> do Me Conectei.</p>
+				  </td>
+				</tr>
+			  </table>
+			</td>
+		  </tr>
+		</table>
+	  </div>
+	</td>
+	<td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;" valign="top"></td>
+  </tr></table>
+</body>
+</html>
+	`
+
+	data := struct {
+		Username    string
+		Email       string
+		MainMessage string
+		ContactLink string
+		PrivacyLink string
+		TermsLink   string
+	}{
+		Username:    username,
+		Email:       email,
+		MainMessage: mainMessage,
+		ContactLink: contactLink,
+		PrivacyLink: privacyLink,
+		TermsLink:   termsLink,
+	}
+
+	tmpl, err := template.New("meConecteiTemplate").Parse(htmlTemplate)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	var result strings.Builder
+	err = tmpl.Execute(&result, data)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return result.String()
+}

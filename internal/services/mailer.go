@@ -75,7 +75,7 @@ func sendWithMailgun(subject, recipient, htmlTemplate, attachment string) {
 	log.Printf("ID: %s Resp: %s\n", id, resp)
 }
 
-func sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment string) {
+func sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment, source string) {
 	sess, _ := session.NewSession(&aws.Config{
 		Region: aws.String("us-west-2"),
 	})
@@ -85,7 +85,14 @@ func sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment str
 	var emailRaw bytes.Buffer
 	writer := multipart.NewWriter(&emailRaw)
 
-	emailRaw.WriteString(fmt.Sprintf("From: JeanLuca <jeanlucafp@gmail.com>\n"))
+	var fromName string
+	if source == "notificacao@meconectei.com.br" {
+		fromName = "Me Conectei"
+	} else {
+		fromName = "JeanLuca"
+	}
+
+	emailRaw.WriteString(fmt.Sprintf("From: %s <%s>\n", fromName, source))
 	emailRaw.WriteString(fmt.Sprintf("To: %s\n", recipient))
 	emailRaw.WriteString(fmt.Sprintf("Subject: %s\n", subject))
 	emailRaw.WriteString("MIME-Version: 1.0\n")
@@ -133,9 +140,9 @@ func sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment str
 	}
 }
 
-func sendWithSES(subject, recipient, htmlTemplate, attachment string) {
+func sendWithSES(subject, recipient, htmlTemplate, attachment, source string) {
 	if attachment != "" {
-		sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment)
+		sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment, source)
 		return
 	}
 
@@ -161,7 +168,7 @@ func sendWithSES(subject, recipient, htmlTemplate, attachment string) {
 				Data: aws.String(subject),
 			},
 		},
-		Source: aws.String("jeanlucafp@gmail.com"),
+		Source: aws.String(source),
 	}
 
 	_, err := svc.SendEmail(input)
@@ -175,10 +182,17 @@ func AsyncSend(input dto.MailSenderInputDto) error {
 		return err
 	}
 
+	var source string
+	if input.TemplateCode == 3 {
+		source = "notificacao@meconectei.com.br"
+	} else {
+		source = "jeanlucafp@gmail.com"
+	}
+
 	if input.Recipient == "jeanlucafp@gmail.com" {
 		go sendWithMailgun(input.Subject, input.Recipient, input.GetTemplate(), input.AttachmentLink)
 	} else {
-		go sendWithSES(input.Subject, input.Recipient, input.GetTemplate(), input.AttachmentLink)
+		go sendWithSES(input.Subject, input.Recipient, input.GetTemplate(), input.AttachmentLink, source)
 	}
 
 	return nil

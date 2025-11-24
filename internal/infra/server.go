@@ -39,6 +39,7 @@ func setupAPI() {
 	sentryHandler := sentryhttp.New(sentryhttp.Options{})
 	http.HandleFunc("/email", configs.CORSMiddleware(sentryHandler.HandleFunc(api.EmailHandler)))
 	http.HandleFunc("/email-stats", configs.CORSMiddleware(sentryHandler.HandleFunc(api.EmailEstatisticasHandler)))
+	http.HandleFunc("/email/meconectei", configs.CORSMiddleware(sentryHandler.HandleFunc(api.MeConecteiEmailHandler)))
 
 	http.HandleFunc("/notificacao", configs.CORSMiddleware(sentryHandler.HandleFunc(api.NotificationHandler)))
 	http.HandleFunc("/notificacao/mark-as-read", configs.CORSMiddleware(sentryHandler.HandleFunc(api.NotificationHandler)))

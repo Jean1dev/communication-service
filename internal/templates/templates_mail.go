@@ -522,3 +522,172 @@ background-color: #f6f6f6;
 
 	return result.String()
 }
+
+func AppointmentConfirmationTemplate(clientName, appointmentDate, serviceType string) string {
+	htmlTemplate := `<!DOCTYPE html>
+<html style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+<head>
+<meta name="viewport" content="width=device-width" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Confirmação de Agendamento</title>
+
+<style type="text/css">
+img {
+max-width: 100%;
+}
+body {
+-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important; height: 100%; line-height: 1.6em;
+}
+body {
+background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+@media only screen and (max-width: 640px) {
+  body {
+	padding: 0 !important;
+  }
+  h1 {
+	font-weight: 800 !important; margin: 20px 0 5px !important;
+  }
+  h2 {
+	font-weight: 800 !important; margin: 20px 0 5px !important;
+  }
+  .container {
+	padding: 0 !important; width: 100% !important;
+  }
+  .content {
+	padding: 0 !important;
+  }
+  .content-wrap {
+	padding: 10px !important;
+  }
+  .appointment-card {
+	width: 100% !important;
+  }
+  .icon-circle {
+	width: 60px !important;
+	height: 60px !important;
+  }
+}
+</style>
+</head>
+
+<body itemscope itemtype="http://schema.org/EmailMessage" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important; height: 100%; line-height: 1.6em; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); margin: 0;" bgcolor="#f5f7fa">
+
+<table class="body-wrap" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); margin: 0; padding: 40px 0;" bgcolor="#f5f7fa"><tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;"><td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;" valign="top"></td>
+	<td class="container" width="600" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; display: block !important; max-width: 600px !important; clear: both !important; margin: 0 auto;" valign="top">
+	  <div class="content" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; max-width: 600px; display: block; margin: 0 auto; padding: 20px;">
+		<table class="main" width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; border-radius: 12px; background-color: #fff; margin: 0; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden;" bgcolor="#fff"><tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;"><td class="header" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0; padding: 40px 30px; text-align: center;" bgcolor="#667eea" valign="top" align="center">
+			  <table width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+				  <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
+					<div class="icon-circle" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 80px; height: 80px; background-color: rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 40px; color: #fff;">✨</div>
+				  </td>
+				</tr>
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+				  <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0;" valign="top">
+					<h1 style="font-family: 'Helvetica Neue',Helvetica,Arial,'Lucida Grande',sans-serif; box-sizing: border-box; font-size: 28px; color: #fff; line-height: 1.2em; font-weight: 600; text-align: center; margin: 0; letter-spacing: 0.5px;" align="center">Agendamento Confirmado!</h1>
+				  </td>
+				</tr>
+			  </table>
+			</td>
+		  </tr><tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;"><td class="content-wrap" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 40px 30px;" valign="top">
+			  <table width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+				  <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 30px; text-align: center; color: #555;" align="center" valign="top">
+					<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 16px; color: #555; line-height: 1.6em; margin: 0 0 10px;">Olá !</p>
+					<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 16px; color: #555; line-height: 1.6em; margin: 0;">Seu agendamento foi confirmado com sucesso. Estamos ansiosos para recebê-lo!</p>
+				  </td>
+				</tr>
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+				  <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 30px;" valign="top">
+					<table class="appointment-card" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; margin: 0; background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);" bgcolor="#fdf2f8">
+					  <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+						<td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 30px;" valign="top">
+						  <table width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+							<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+							  <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: middle; margin: 0; padding: 0 0 20px; text-align: center;" align="center" valign="middle">
+								<div style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #fff;">📅</div>
+							  </td>
+							</tr>
+							<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+							  <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 15px; text-align: center;" align="center" valign="top">
+								<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px; font-weight: 600;">Cliente</p>
+								<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 20px; color: #333; line-height: 1.4em; margin: 0; font-weight: 600;">{{.ClientName}}</p>
+							  </td>
+							</tr>
+							<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+							  <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 15px; text-align: center; border-top: 1px solid rgba(102, 126, 234, 0.2); padding-top: 20px;" align="center" valign="top">
+								<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px; font-weight: 600;">Data e Horário</p>
+								<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 22px; color: #333; line-height: 1.4em; margin: 0; font-weight: 600;">{{.AppointmentDate}}</p>
+							  </td>
+							</tr>
+							<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+							  <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0; text-align: center; border-top: 1px solid rgba(102, 126, 234, 0.2); padding-top: 20px;" align="center" valign="top">
+								<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px; font-weight: 600;">Tipo de Serviço</p>
+								<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 20px; color: #667eea; line-height: 1.4em; margin: 0; font-weight: 600;">{{.ServiceType}}</p>
+							  </td>
+							</tr>
+						  </table>
+						</td>
+					  </tr>
+					</table>
+				  </td>
+				</tr>
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+				  <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px; text-align: center; color: #777;" align="center" valign="top">
+					<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #777; line-height: 1.6em; margin: 0;">Se precisar reagendar ou cancelar, entre em contato conosco com pelo menos 24 horas de antecedência.</p>
+				  </td>
+				</tr>
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+				  <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0; text-align: center;" align="center" valign="top">
+					<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 16px; color: #333; line-height: 1.6em; margin: 0 0 20px; font-weight: 500;">Nos vemos em breve! 💅✨</p>
+				  </td>
+				</tr>
+			  </table>
+			</td>
+		  </tr><tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;"><td class="footer" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; vertical-align: top; margin: 0; padding: 30px; background-color: #f9fafb; border-top: 1px solid #e5e7eb; text-align: center; color: #9ca3af;" bgcolor="#f9fafb" valign="top" align="center">
+			  <table width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; margin: 0;">
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; margin: 0;">
+				  <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; vertical-align: top; margin: 0; padding: 0 0 10px; color: #9ca3af; line-height: 1.6em;" valign="top">
+					<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #9ca3af; line-height: 1.6em; margin: 0;">Este é um e-mail automático de confirmação de agendamento.</p>
+				  </td>
+				</tr>
+				<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; margin: 0;">
+				  <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; vertical-align: top; margin: 0; padding: 0; color: #9ca3af; line-height: 1.6em;" valign="top">
+					<p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #9ca3af; line-height: 1.6em; margin: 0;">Por favor, não responda este e-mail.</p>
+				  </td>
+				</tr>
+			  </table>
+			</td>
+		  </tr></table>
+	  </div>
+	</td>
+	<td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;" valign="top"></td>
+  </tr></table>
+</body>
+</html>
+	`
+
+	data := struct {
+		ClientName      string
+		AppointmentDate string
+		ServiceType     string
+	}{
+		ClientName:      clientName,
+		AppointmentDate: appointmentDate,
+		ServiceType:     serviceType,
+	}
+
+	tmpl, err := template.New("appointmentConfirmationTemplate").Parse(htmlTemplate)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	var result strings.Builder
+	err = tmpl.Execute(&result, data)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return result.String()
+}

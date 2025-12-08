@@ -21,6 +21,10 @@ type CustomBodyPropsDto struct {
 	ContactLink string `json:"contactLink"`
 	PrivacyLink string `json:"privacyLink"`
 	TermsLink   string `json:"termsLink"`
+
+	AppointmentDate string `json:"appointmentDate"`
+	ServiceType     string `json:"serviceType"`
+	ClientName      string `json:"clientName"`
 }
 
 type MailSenderInputDto struct {
@@ -72,6 +76,14 @@ func (m *MailSenderInputDto) GetTemplate() string {
 			m.CustomBodyProps.ContactLink,
 			m.CustomBodyProps.PrivacyLink,
 			m.CustomBodyProps.TermsLink,
+		)
+	}
+
+	if m.TemplateCode == 4 {
+		return templates.AppointmentConfirmationTemplate(
+			m.CustomBodyProps.ClientName,
+			m.CustomBodyProps.AppointmentDate,
+			m.CustomBodyProps.ServiceType,
 		)
 	}
 	return templates.Default(m.Subject, m.Body)

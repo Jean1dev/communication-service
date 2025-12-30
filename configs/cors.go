@@ -10,6 +10,7 @@ var allowedOrigins = []string{
 	"https://caixinha-gilt.vercel.app",
 	"https://jeanconsultoria.com",
 	"https://politicai.vercel.app",
+	"https://plataforma.copyscanner.com.br,
 }
 
 func CORSMiddleware(next http.HandlerFunc) http.HandlerFunc {

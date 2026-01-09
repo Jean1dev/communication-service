@@ -186,7 +186,7 @@ func AsyncSend(input dto.MailSenderInputDto) error {
 	if input.TemplateCode == 3 {
 		source = "notificacao@meconectei.com.br"
 	} else {
-		source = "jeanlucafp@gmail.com"
+		source = "info@jeanconsultoria.com"
 	}
 
 	if input.Recipient == "jeanlucafp@gmail.com" {

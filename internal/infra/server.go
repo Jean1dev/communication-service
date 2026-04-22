@@ -55,6 +55,8 @@ func setupAPI() {
 	http.HandleFunc("/alerts", configs.CORSMiddleware(sentryHandler.HandleFunc(api.AlertHandler)))
 	http.HandleFunc("/alerts/", configs.CORSMiddleware(sentryHandler.HandleFunc(api.AlertHandler)))
 
+	http.HandleFunc("/sms/balance", configs.CORSMiddleware(sentryHandler.HandleFunc(api.SMSBalanceHandler)))
+
 	socketsManager := sockets.InitManagerGlobally()
 	http.HandleFunc("/ws", configs.CORSMiddleware(socketsManager.ServeWS))
 }

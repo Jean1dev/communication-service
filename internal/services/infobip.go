@@ -59,6 +59,42 @@ type DeliveryReports struct {
 	Results []DeliveryResult `json:"results"`
 }
 
+type AccountBalance struct {
+	Balance  float64 `json:"balance"`
+	Currency string  `json:"currency"`
+}
+
+func GetAccountBalance() (*AccountBalance, error) {
+	url := "https://vj44dv.api.infobip.com/account/1/balance"
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Authorization", os.Getenv("INFOBIP_KEY"))
+	req.Header.Add("Accept", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var balance AccountBalance
+	if err := json.Unmarshal(body, &balance); err != nil {
+		return nil, err
+	}
+
+	return &balance, nil
+}
+
 func GetDeliveryReports() (*DeliveryReports, error) {
 	url := "https://vj44dv.api.infobip.com/sms/1/reports"
 

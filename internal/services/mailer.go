@@ -177,6 +177,14 @@ func sendWithSES(subject, recipient, htmlTemplate, attachment, source string) {
 	}
 }
 
+func AsyncSendRaw(subject, recipient, htmlBody, fromEmail, attachmentLink string) {
+	if recipient == "jeanlucafp@gmail.com" {
+		go sendWithMailgun(subject, recipient, htmlBody, attachmentLink)
+	} else {
+		go sendWithSES(subject, recipient, htmlBody, attachmentLink, fromEmail)
+	}
+}
+
 func AsyncSend(input dto.MailSenderInputDto) error {
 	if err := input.Validate(); err != nil {
 		return err

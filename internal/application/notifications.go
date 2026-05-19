@@ -143,7 +143,7 @@ func NewNofiticationForCaixinha(description string, user string, caixinhasId []s
 
 	for _, it := range notificacoesList {
 		if err := newAlertNotification(description, it); err != nil {
-			log.Fatalf(err.Error())
+			log.Fatalf("%s", err.Error())
 		}
 	}
 

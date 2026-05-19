@@ -64,6 +64,14 @@ type AccountBalance struct {
 	Currency string  `json:"currency"`
 }
 
+func infobipAuthHeader() string {
+	key := os.Getenv("INFOBIP_KEY")
+	if strings.HasPrefix(key, "App ") || strings.HasPrefix(key, "Basic ") || strings.HasPrefix(key, "IBSSO ") {
+		return key
+	}
+	return "App " + key
+}
+
 func GetAccountBalance() (*AccountBalance, error) {
 	url := "https://vj44dv.api.infobip.com/account/1/balance"
 
@@ -73,7 +81,7 @@ func GetAccountBalance() (*AccountBalance, error) {
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", os.Getenv("INFOBIP_KEY"))
+	req.Header.Add("Authorization", infobipAuthHeader())
 	req.Header.Add("Accept", "application/json")
 
 	res, err := client.Do(req)
@@ -108,7 +116,7 @@ func GetDeliveryReports() (*DeliveryReports, error) {
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", os.Getenv("INFOBIP_KEY"))
+	req.Header.Add("Authorization", infobipAuthHeader())
 	req.Header.Add("Accept", "application/json")
 
 	res, err := client.Do(req)
@@ -185,7 +193,7 @@ func DispatchSMS(to []string, text string) {
 		return
 	}
 
-	req.Header.Add("Authorization", os.Getenv("INFOBIP_KEY"))
+	req.Header.Add("Authorization", infobipAuthHeader())
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 

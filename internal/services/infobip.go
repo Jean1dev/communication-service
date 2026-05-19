@@ -87,6 +87,10 @@ func GetAccountBalance() (*AccountBalance, error) {
 		return nil, err
 	}
 
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("infobip API error (status %d): %s", res.StatusCode, string(body))
+	}
+
 	var balance AccountBalance
 	if err := json.Unmarshal(body, &balance); err != nil {
 		return nil, err
@@ -116,6 +120,10 @@ func GetDeliveryReports() (*DeliveryReports, error) {
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("infobip API error (status %d): %s", res.StatusCode, string(body))
 	}
 
 	var reports DeliveryReports

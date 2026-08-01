@@ -179,6 +179,14 @@ func sendWithSES(subject, recipient, htmlTemplate, attachment, attachmentName, s
 	}
 }
 
+func AsyncSendRaw(subject, recipient, htmlBody, fromEmail, attachmentLink string) {
+	if recipient == "jeanlucafp@gmail.com" {
+		go sendWithMailgun(subject, recipient, htmlBody, attachmentLink)
+	} else {
+		go sendWithSES(subject, recipient, htmlBody, attachmentLink, fromEmail)
+	}
+}
+
 func AsyncSend(input dto.MailSenderInputDto) error {
 	if err := input.Validate(); err != nil {
 		return err
@@ -188,7 +196,7 @@ func AsyncSend(input dto.MailSenderInputDto) error {
 	if input.TemplateCode == 3 {
 		source = "notificacao@meconectei.com.br"
 	} else {
-		source = "jeanlucafp@gmail.com"
+		source = "info@jeanconsultoria.com"
 	}
 
 	attachmentName := input.GetAttachmentName()

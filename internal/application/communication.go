@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -12,8 +13,12 @@ import (
 
 	"github.com/Jean1dev/communication-service/configs"
 	"github.com/Jean1dev/communication-service/internal/dto"
+	"github.com/Jean1dev/communication-service/internal/infra/database"
 	"github.com/Jean1dev/communication-service/internal/services"
 	"github.com/valyala/fastjson"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func searchForPhone(recipient string) (string, error) {
@@ -87,4 +92,56 @@ func SendCommunications(input dto.MailSenderInputDto, recipients, types []string
 			go sendSMS(input.Body, recipients)
 		}
 	}
+}
+
+type SMSAuditRecord struct {
+	ID     string                      `json:"id"`
+	Result *services.InfobipSendResponse `json:"result"`
+}
+
+func GetSMSAuditRecords() ([]SMSAuditRecord, error) {
+	db := database.GetDB()
+
+	opts := options.Find().SetSort(bson.D{{Key: "_id", Value: -1}}).SetLimit(50)
+	err, cursor := db.FindAll("infobip_audit", bson.D{}, opts)
+	if err != nil {
+		return nil, err
+	}
+	if cursor == nil {
+		return []SMSAuditRecord{}, nil
+	}
+	defer cursor.Close(context.Background())
+
+	var records []SMSAuditRecord
+	for cursor.Next(context.Background()) {
+		var doc bson.M
+		if err := cursor.Decode(&doc); err != nil {
+			log.Printf("Error decoding audit record: %v", err)
+			continue
+		}
+
+		record := SMSAuditRecord{}
+		if id, ok := doc["_id"].(primitive.ObjectID); ok {
+			record.ID = id.Hex()
+		}
+
+		if resultStr, ok := doc["result"].(string); ok {
+			var sendResponse services.InfobipSendResponse
+			if err := json.Unmarshal([]byte(resultStr), &sendResponse); err == nil {
+				record.Result = &sendResponse
+			}
+		}
+
+		records = append(records, record)
+	}
+
+	if records == nil {
+		return []SMSAuditRecord{}, nil
+	}
+
+	return records, nil
+}
+
+func GetSMSDeliveryReports() (*services.DeliveryReports, error) {
+	return services.GetDeliveryReports()
 }

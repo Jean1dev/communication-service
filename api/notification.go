@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 
@@ -43,6 +44,13 @@ func NotificationHandler(w http.ResponseWriter, r *http.Request) {
 
 		doPost(w, r)
 		return
+	}
+
+	if method == "GET" {
+		if strings.HasPrefix(r.URL.Path, "/notificacao/sms") {
+			getSMSAudit(w, r)
+			return
+		}
 	}
 
 	http.Error(w, "Method not allowed", http.StatusBadRequest)
@@ -102,6 +110,27 @@ func removeSpecialCaracteres(numbers []string) []string {
 		numbers[i] = number
 	}
 	return numbers
+}
+
+func getSMSAudit(w http.ResponseWriter, r *http.Request) {
+	auditRecords, err := application.GetSMSAuditRecords()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	deliveryReports, err := application.GetSMSDeliveryReports()
+	if err != nil {
+		log.Printf("Error fetching SMS delivery reports: %v", err)
+	}
+
+	response := map[string]interface{}{
+		"auditRecords":    auditRecords,
+		"deliveryReports": deliveryReports,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func sendSMS(w http.ResponseWriter, r *http.Request) {

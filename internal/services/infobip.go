@@ -26,6 +26,122 @@ type Destination struct {
 	To string `json:"to"`
 }
 
+type MessageStatus struct {
+	GroupID   int    `json:"groupId"`
+	GroupName string `json:"groupName"`
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Desc      string `json:"description"`
+}
+
+type SentMessage struct {
+	To        string        `json:"to"`
+	MessageID string        `json:"messageId"`
+	Status    MessageStatus `json:"status"`
+}
+
+type InfobipSendResponse struct {
+	BulkID   string        `json:"bulkId"`
+	Messages []SentMessage `json:"messages"`
+}
+
+type DeliveryResult struct {
+	BulkID    string        `json:"bulkId"`
+	MessageID string        `json:"messageId"`
+	To        string        `json:"to"`
+	SentAt    string        `json:"sentAt"`
+	DoneAt    string        `json:"doneAt"`
+	SmsCount  int           `json:"smsCount"`
+	Status    MessageStatus `json:"status"`
+}
+
+type DeliveryReports struct {
+	Results []DeliveryResult `json:"results"`
+}
+
+type AccountBalance struct {
+	Balance  float64 `json:"balance"`
+	Currency string  `json:"currency"`
+}
+
+func infobipAuthHeader() string {
+	key := os.Getenv("INFOBIP_KEY")
+	if strings.HasPrefix(key, "App ") || strings.HasPrefix(key, "Basic ") || strings.HasPrefix(key, "IBSSO ") {
+		return key
+	}
+	return "App " + key
+}
+
+func GetAccountBalance() (*AccountBalance, error) {
+	url := "https://vj44dv.api.infobip.com/account/1/balance"
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Authorization", infobipAuthHeader())
+	req.Header.Add("Accept", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("infobip API error (status %d): %s", res.StatusCode, string(body))
+	}
+
+	var balance AccountBalance
+	if err := json.Unmarshal(body, &balance); err != nil {
+		return nil, err
+	}
+
+	return &balance, nil
+}
+
+func GetDeliveryReports() (*DeliveryReports, error) {
+	url := "https://vj44dv.api.infobip.com/sms/1/reports"
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Authorization", infobipAuthHeader())
+	req.Header.Add("Accept", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("infobip API error (status %d): %s", res.StatusCode, string(body))
+	}
+
+	var reports DeliveryReports
+	if err := json.Unmarshal(body, &reports); err != nil {
+		return nil, err
+	}
+
+	return &reports, nil
+}
+
 func numberFormat(number string) string {
 	if !strings.HasPrefix(number, "55") {
 		number = "55" + number
@@ -77,7 +193,7 @@ func DispatchSMS(to []string, text string) {
 		return
 	}
 
-	req.Header.Add("Authorization", os.Getenv("INFOBIP_KEY"))
+	req.Header.Add("Authorization", infobipAuthHeader())
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 

@@ -37,6 +37,10 @@ func setupAPI() {
 	}
 
 	sentryHandler := sentryhttp.New(sentryhttp.Options{})
+	http.HandleFunc("/v2/email/send", configs.CORSMiddleware(sentryHandler.HandleFunc(api.SendEmailV2Handler)))
+	http.HandleFunc("/v2/email/templates", configs.CORSMiddleware(sentryHandler.HandleFunc(api.EmailTemplatesV2Handler)))
+	http.HandleFunc("/v2/email/templates/", configs.CORSMiddleware(sentryHandler.HandleFunc(api.EmailTemplatesV2Handler)))
+
 	http.HandleFunc("/email", configs.CORSMiddleware(sentryHandler.HandleFunc(api.EmailHandler)))
 	http.HandleFunc("/email-stats", configs.CORSMiddleware(sentryHandler.HandleFunc(api.EmailEstatisticasHandler)))
 	http.HandleFunc("/email/meconectei", configs.CORSMiddleware(sentryHandler.HandleFunc(api.MeConecteiEmailHandler)))
@@ -54,6 +58,8 @@ func setupAPI() {
 	http.HandleFunc("/alerts/grouped", configs.CORSMiddleware(sentryHandler.HandleFunc(api.AlertsGroupedHandler)))
 	http.HandleFunc("/alerts", configs.CORSMiddleware(sentryHandler.HandleFunc(api.AlertHandler)))
 	http.HandleFunc("/alerts/", configs.CORSMiddleware(sentryHandler.HandleFunc(api.AlertHandler)))
+
+	http.HandleFunc("/sms/balance", configs.CORSMiddleware(sentryHandler.HandleFunc(api.SMSBalanceHandler)))
 
 	socketsManager := sockets.InitManagerGlobally()
 	http.HandleFunc("/ws", configs.CORSMiddleware(socketsManager.ServeWS))

@@ -42,7 +42,7 @@ func downloadAttachment(attachment string) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func sendWithMailgun(subject, recipient, htmlTemplate, attachment string) {
+func sendWithMailgun(subject, recipient, htmlTemplate, attachment, attachmentName string) {
 	privateAPIKey := os.Getenv("MAILGUN_KEY")
 	if privateAPIKey == "" {
 		log.Print("MAILGUN_KEY not configured")
@@ -59,7 +59,7 @@ func sendWithMailgun(subject, recipient, htmlTemplate, attachment string) {
 	if attachment != "" {
 		bufferAttchament, err := downloadAttachment(attachment)
 		if err == nil {
-			message.AddBufferAttachment("anexo.pdf", bufferAttchament)
+			message.AddBufferAttachment(attachmentName, bufferAttchament)
 		}
 	}
 
@@ -75,7 +75,7 @@ func sendWithMailgun(subject, recipient, htmlTemplate, attachment string) {
 	log.Printf("ID: %s Resp: %s\n", id, resp)
 }
 
-func sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment, source string) {
+func sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment, attachmentName, source string) {
 	sess, _ := session.NewSession(&aws.Config{
 		Region: aws.String("us-west-2"),
 	})
@@ -91,6 +91,8 @@ func sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment, so
 	} else {
 		fromName = "JeanLuca"
 	}
+
+	fileName := filepath.Base(attachmentName)
 
 	emailRaw.WriteString(fmt.Sprintf("From: %s <%s>\n", fromName, source))
 	emailRaw.WriteString(fmt.Sprintf("To: %s\n", recipient))
@@ -116,9 +118,9 @@ func sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment, so
 	encodedFile := base64.StdEncoding.EncodeToString(bufferAttchment)
 
 	mimeHeaders = textproto.MIMEHeader{}
-	mimeHeaders.Set("Content-Type", fmt.Sprintf("application/octet-stream; name=%s", filepath.Base("anexo.pdf")))
+	mimeHeaders.Set("Content-Type", fmt.Sprintf("application/octet-stream; name=\"%s\"", fileName))
 	mimeHeaders.Set("Content-Transfer-Encoding", "base64")
-	mimeHeaders.Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filepath.Base("anexo.pdf")))
+	mimeHeaders.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileName))
 
 	part, _ = writer.CreatePart(mimeHeaders)
 	part.Write([]byte(encodedFile))
@@ -140,9 +142,9 @@ func sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment, so
 	}
 }
 
-func sendWithSES(subject, recipient, htmlTemplate, attachment, source string) {
+func sendWithSES(subject, recipient, htmlTemplate, attachment, attachmentName, source string) {
 	if attachment != "" {
-		sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment, source)
+		sendEmailWithAttachmentSES(subject, recipient, htmlTemplate, attachment, attachmentName, source)
 		return
 	}
 
@@ -189,10 +191,11 @@ func AsyncSend(input dto.MailSenderInputDto) error {
 		source = "jeanlucafp@gmail.com"
 	}
 
+	attachmentName := input.GetAttachmentName()
 	if input.Recipient == "jeanlucafp@gmail.com" {
-		go sendWithMailgun(input.Subject, input.Recipient, input.GetTemplate(), input.AttachmentLink)
+		go sendWithMailgun(input.Subject, input.Recipient, input.GetTemplate(), input.AttachmentLink, attachmentName)
 	} else {
-		go sendWithSES(input.Subject, input.Recipient, input.GetTemplate(), input.AttachmentLink, source)
+		go sendWithSES(input.Subject, input.Recipient, input.GetTemplate(), input.AttachmentLink, attachmentName, source)
 	}
 
 	return nil

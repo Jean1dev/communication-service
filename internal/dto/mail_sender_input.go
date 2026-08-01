@@ -2,6 +2,7 @@ package dto
 
 import (
 	"errors"
+	"path/filepath"
 
 	"github.com/Jean1dev/communication-service/internal/templates"
 )
@@ -33,7 +34,15 @@ type MailSenderInputDto struct {
 	Recipient       string             `json:"to"`
 	TemplateCode    int                `json:"templateCode"`
 	AttachmentLink  string             `json:"attachmentLink"`
+	AttachmentName  string             `json:"attachmentName"`
 	CustomBodyProps CustomBodyPropsDto `json:"customBodyProps"`
+}
+
+func (m *MailSenderInputDto) GetAttachmentName() string {
+	if m.AttachmentName == "" {
+		return "anexo.pdf"
+	}
+	return filepath.Base(m.AttachmentName)
 }
 
 func (m *MailSenderInputDto) Validate() error {

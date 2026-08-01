@@ -180,10 +180,12 @@ func sendWithSES(subject, recipient, htmlTemplate, attachment, attachmentName, s
 }
 
 func AsyncSendRaw(subject, recipient, htmlBody, fromEmail, attachmentLink string) {
+	attachmentName := "anexo.pdf"
+
 	if recipient == "jeanlucafp@gmail.com" {
-		go sendWithMailgun(subject, recipient, htmlBody, attachmentLink)
+		go sendWithMailgun(subject, recipient, htmlBody, attachmentLink, attachmentName)
 	} else {
-		go sendWithSES(subject, recipient, htmlBody, attachmentLink, fromEmail)
+		go sendWithSES(subject, recipient, htmlBody, attachmentLink, attachmentName, fromEmail)
 	}
 }
 

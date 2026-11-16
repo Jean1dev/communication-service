@@ -2,6 +2,9 @@ module github.com/Jean1dev/communication-service
 
 go 1.26.0
 
+// +heroku goVersion go1.26
+// +heroku install ./cmd/...
+
 require (
 	github.com/aws/aws-sdk-go v1.55.5
 	github.com/getsentry/sentry-go v0.29.0
